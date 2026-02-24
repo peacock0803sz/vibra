@@ -30,7 +30,7 @@ images/                # Agent container Dockerfiles (claude, codex, gemini)
 
 | Layer | Technologies |
 |-------|-------------|
-| Backend | Go 1.23+, connect-go |
+| Backend | Go 1.25+, connect-go |
 | Frontend | React Router v7, TypeScript, connect-es, TailwindCSS |
 | Protocol | Protocol Buffers v3, Buf CLI |
 | Container | Docker / Podman |
@@ -41,7 +41,7 @@ images/                # Agent container Dockerfiles (claude, codex, gemini)
 
 ### Prerequisites
 
-- [Nix](https://nixos.org/) with flakes enabled (or manually install Go 1.23+, Node.js 22, Buf CLI, Docker)
+- [Nix](https://nixos.org/) with flakes enabled (or manually install Go 1.25+, Node.js 22, Buf CLI, Docker)
 - [Tailscale](https://tailscale.com/) connected on your network
 
 ### Setup
