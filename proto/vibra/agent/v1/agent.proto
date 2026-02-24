@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+package vibra.agent.v1;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+// AgentService provides AI agent execution and management.
+service AgentService {
+  rpc GetNodeInfo(GetNodeInfoRequest) returns (GetNodeInfoResponse);
+  rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
+  rpc Execute(ExecuteRequest) returns (stream ExecuteResponse);
+  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+  rpc ContinueSession(ContinueSessionRequest) returns (stream ContinueSessionResponse);
+}
+
+// AgentType enumerates supported AI CLI agents.
+enum AgentType {
+  AGENT_TYPE_UNSPECIFIED = 0;
+  AGENT_TYPE_CLAUDE = 1;
+  AGENT_TYPE_CODEX = 2;
+  AGENT_TYPE_GEMINI = 3;
+}
+
+// PermissionMode controls the container configuration for agent execution.
+enum PermissionMode {
+  PERMISSION_MODE_UNSPECIFIED = 0;
+  PERMISSION_MODE_OBSERVE = 1;
+  PERMISSION_MODE_VERIFY = 2;
+  PERMISSION_MODE_EDIT = 3;
+  PERMISSION_MODE_FULL = 4;
+}
+
+// GetNodeInfo
+
+message GetNodeInfoRequest {}
+
+message GetNodeInfoResponse {
+  string node_id = 1;
+  string tailscale_hostname = 2;
+  repeated AgentInfo available_agents = 3;
+  NodeStatus status = 4;
+}
+
+enum NodeStatus {
+  NODE_STATUS_UNSPECIFIED = 0;
+  NODE_STATUS_ONLINE = 1;
+  NODE_STATUS_DEGRADED = 2;
+  NODE_STATUS_OFFLINE = 3;
+}
+
+message AgentInfo {
+  AgentType type = 1;
+  bool available = 2;
+  string version = 3;
+}
+
+// ListAgents
+
+message ListAgentsRequest {}
+
+message ListAgentsResponse {
+  repeated AgentInfo agents = 1;
+}
+
+// Execute
+
+message ExecuteRequest {
+  AgentType agent = 1;
+  string prompt = 2;
+  string session_id = 3;
+  string working_directory = 4;
+  map<string, string> env = 5;
+  PermissionMode permission_mode = 6;
+}
+
+// StreamEvent contains the shared payload structure for streaming RPCs.
+message StreamEvent {
+  int64 sequence = 1;
+  string message_id = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  oneof payload {
+    string text = 4;
+    ToolUse tool_use = 5;
+    ToolResult tool_result = 6;
+    Error error = 7;
+    SessionInfo session = 8;
+  }
+}
+
+message ExecuteResponse {
+  StreamEvent event = 1;
+}
+
+message ContinueSessionResponse {
+  StreamEvent event = 1;
+}
+
+message ToolUse {
+  string tool_name = 1;
+  google.protobuf.Any parameters = 2;
+}
+
+message ToolResult {
+  string tool_name = 1;
+  bool success = 2;
+  string output = 3;
+  string file_path = 4;
+  string language = 5;
+}
+
+message Error {
+  int32 code = 1;
+  string message = 2;
+}
+
+message SessionInfo {
+  string session_id = 1;
+  AgentType agent = 2;
+  int64 cost_micros = 3;
+  string currency_code = 4;
+  google.protobuf.Timestamp created_at = 5;
+  string node_id = 6;
+}
+
+// ListSessions
+
+message ListSessionsRequest {
+  AgentType agent_filter = 1;
+}
+
+message ListSessionsResponse {
+  repeated SessionInfo sessions = 1;
+}
+
+// ContinueSession
+
+message ContinueSessionRequest {
+  string session_id = 1;
+  string prompt = 2;
+  string working_directory = 3;
+  map<string, string> env = 4;
+}
