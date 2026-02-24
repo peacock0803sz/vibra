@@ -177,8 +177,8 @@ func TestClaudeAdapter_ContinueFlags(t *testing.T) {
 	a := NewClaudeAdapter()
 
 	flags := a.ContinueFlags("")
-	if len(flags) != 1 || flags[0] != "--continue" {
-		t.Errorf("ContinueFlags(\"\") = %v, want [--continue]", flags)
+	if flags != nil {
+		t.Errorf("ContinueFlags(\"\") = %v, want nil", flags)
 	}
 
 	flags = a.ContinueFlags("sess_123")

@@ -140,7 +140,7 @@ func (a *ClaudeAdapter) parseMessage(msg *claudeMsg) *agentv1.StreamEvent {
 
 func (a *ClaudeAdapter) ContinueFlags(sessionID string) []string {
 	if sessionID == "" {
-		return []string{"--continue"}
+		return nil
 	}
 	return []string{"--resume", sessionID}
 }
