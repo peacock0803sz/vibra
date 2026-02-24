@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
+	connectcors "connectrpc.com/cors"
+	"github.com/rs/cors"
 
 	"github.com/peacock0803sz/vibra/back/gen/vibra/agent/v1/agentv1connect"
 	"github.com/peacock0803sz/vibra/back/internal/auth"
@@ -42,9 +44,16 @@ func main() {
 	)
 	mux.Handle(path, handler)
 
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins: []string{envOr("VIBRA_CORS_ORIGIN", "http://127.0.0.1:5173")},
+		AllowedMethods: connectcors.AllowedMethods(),
+		AllowedHeaders: connectcors.AllowedHeaders(),
+		ExposedHeaders: connectcors.ExposedHeaders(),
+	})
+
 	srv := &http.Server{
 		Addr:              listenAddr,
-		Handler:           mux,
+		Handler:           corsHandler.Handler(mux),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 
