@@ -55,6 +55,8 @@ func main() {
 		Addr:              listenAddr,
 		Handler:           corsHandler.Handler(mux),
 		ReadHeaderTimeout: 10 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		// WriteTimeout is intentionally omitted for streaming RPCs.
 	}
 
 	// Graceful shutdown on SIGINT/SIGTERM.
