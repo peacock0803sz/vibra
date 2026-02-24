@@ -16,6 +16,7 @@ jobs:
           lint: true
           format: true
           breaking: false # Enable after first merge to main
+          pr_comment: false
 
   back:
     name: Backend
@@ -41,6 +42,8 @@ jobs:
         with:
           node-version: "22"
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: front/package.json
       - run: pnpm install --frozen-lockfile
         working-directory: front
       - run: pnpm lint
