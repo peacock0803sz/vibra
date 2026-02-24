@@ -1,0 +1,6 @@
+{"type":"system","subtype":"init","session_id":"sess_abc123","tools":["Read","Write","Bash","Glob","Grep","WebFetch"]}
+{"type":"assistant","message":{"id":"msg_01","type":"text","text":"I'll help you with that. Let me start by reading the file."},"session_id":"sess_abc123"}
+{"type":"assistant","message":{"id":"msg_02","type":"tool_use","name":"Read","input":{"file_path":"/workspace/main.go"}},"session_id":"sess_abc123"}
+{"type":"assistant","message":{"id":"msg_03","type":"tool_result","name":"Read","content":"package main\n\nfunc main() {\n\tprintln(\"hello\")\n}\n","is_error":false},"session_id":"sess_abc123"}
+{"type":"assistant","message":{"id":"msg_04","type":"text","text":"Here's the content of main.go. The file contains a simple Go program that prints \"hello\"."},"session_id":"sess_abc123"}
+{"type":"result","subtype":"success","session_id":"sess_abc123","cost_usd":0.003,"duration_ms":1200,"is_error":false}
