@@ -41,6 +41,8 @@ jobs:
         working-directory: front
       - run: pnpm lint
         working-directory: front
+      - run: pnpm format:check
+        working-directory: front
       - run: pnpm typecheck
         working-directory: front
       - run: pnpm test
