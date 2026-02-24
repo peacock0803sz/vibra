@@ -14,7 +14,7 @@ export function PromptInput({ onSubmit, disabled = false }: PromptInputProps) {
     if (!trimmed || disabled) return;
     onSubmit(trimmed);
     setValue("");
-    // テキストエリアの高さをリセット
+    // Reset textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
@@ -32,7 +32,7 @@ export function PromptInput({ onSubmit, disabled = false }: PromptInputProps) {
 
   const handleInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
-    // 自動リサイズ (最大200px)
+    // Auto-resize (max 200px)
     const el = e.target;
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 200)}px`;

@@ -7,17 +7,17 @@ export interface UseStreamResult {
   events: StreamEvent[];
   status: StreamStatus;
   error: Error | null;
-  /** 新しいイベントの非同期イテラブルを消費する */
+  /** Consumes an async iterable of new events */
   consume: (iterable: AsyncIterable<{ event?: StreamEvent }>) => Promise<void>;
-  /** ストリーミングを中断する */
+  /** Aborts the stream consumption */
   abort: () => void;
-  /** 状態をリセットする */
+  /** Resets the stream state */
   reset: () => void;
 }
 
 /**
- * サーバーストリーミングRPCのイベント消費を管理するフック。
- * connect-esのAsyncIterableを受け取り、React状態に変換する。
+ * Hook to manage consumption of server-streaming RPC events.
+ * Takes an AsyncIterable from connect-es and translates it into React state.
  */
 export function useStream(): UseStreamResult {
   const [events, setEvents] = useState<StreamEvent[]>([]);

@@ -38,7 +38,7 @@ func NewAgentServer(runner *container.Runner, sandbox *sandbox.Config) *AgentSer
 	}
 }
 
-// Execute はプロンプトをAIエージェントに送信し、レスポンスをストリーミングする。
+// Execute sends a prompt to the AI agent and streams the response.
 func (s *AgentServer) Execute(
 	ctx context.Context,
 	req *connect.Request[agentv1.ExecuteRequest],
@@ -46,38 +46,38 @@ func (s *AgentServer) Execute(
 ) error {
 	msg := req.Msg
 
-	// アダプタ解決
+	// Resolve adapter
 	a, ok := s.adapters[msg.Agent]
 	if !ok {
 		return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("unknown agent type: %v", msg.Agent))
 	}
 
-	// ワーキングディレクトリ検証
+	// Validate working directory
 	if err := s.sandbox.ValidateDir(msg.WorkingDirectory); err != nil {
 		return connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	// 環境変数フィルタリング
+	// Filter environment variables
 	filteredEnv := s.sandbox.FilterEnv(msg.Env)
 
-	// ContainerSpec構築
+	// Build ContainerSpec
 	spec, err := a.Start(ctx, msg)
 	if err != nil {
 		return connect.NewError(connect.CodeInternal, fmt.Errorf("adapter start: %w", err))
 	}
 	spec.Env = append(spec.Env, filteredEnv...)
 
-	// パーミッション適用
+	// Apply permissions
 	container.ApplyPermission(spec, msg.PermissionMode)
 
-	// コンテナ起動
+	// Start container
 	logs, err := s.runner.Run(ctx, spec)
 	if err != nil {
 		return connect.NewError(connect.CodeUnavailable, fmt.Errorf("container run: %w", err))
 	}
 	defer logs.Close()
 
-	// stdout行ごとにパースしてストリーミング
+	// Parse stdout line by line and stream events
 	return s.streamLines(ctx, a, logs, stream)
 }
 
@@ -89,7 +89,7 @@ func (s *AgentServer) streamLines(
 ) error {
 	var seq atomic.Int64
 	scanner := bufio.NewScanner(logs)
-	// 大きなJSON行に対応 (最大1MB)
+	// Handle large JSON lines (up to 1MB)
 	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
 
 	for scanner.Scan() {

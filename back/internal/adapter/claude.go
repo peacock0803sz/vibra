@@ -42,12 +42,12 @@ func (a *ClaudeAdapter) Start(_ context.Context, req *agentv1.ExecuteRequest) (*
 	}, nil
 }
 
-// claudeEvent はClaude Code stream-json出力の最上位構造
+// claudeEvent is the top-level structure for Claude Code stream-json output.
 type claudeEvent struct {
 	Type    string       `json:"type"`
 	Subtype string       `json:"subtype,omitempty"`
 	Message *claudeMsg   `json:"message,omitempty"`
-	// result イベント用フィールド
+	// Fields for result events
 	SessionID string  `json:"session_id,omitempty"`
 	CostUSD   float64 `json:"cost_usd,omitempty"`
 }

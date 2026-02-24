@@ -17,7 +17,7 @@ import (
 	"github.com/peacock0803sz/vibra/back/internal/sandbox"
 )
 
-// fakeRuntime はテスト用のコンテナランタイムモック
+// fakeRuntime is a mock container runtime for testing.
 type fakeRuntime struct {
 	output string
 }
@@ -73,12 +73,12 @@ func TestExecute_StreamsEvents(t *testing.T) {
 		t.Fatalf("got %d events, want 3", len(events))
 	}
 
-	// initイベント
+	// init event
 	if _, ok := events[0].Payload.(*agentv1.StreamEvent_Session); !ok {
 		t.Errorf("event[0] = %T, want Session", events[0].Payload)
 	}
 
-	// テキストイベント
+	// text event
 	text, ok := events[1].Payload.(*agentv1.StreamEvent_Text)
 	if !ok {
 		t.Fatalf("event[1] = %T, want Text", events[1].Payload)
@@ -87,7 +87,7 @@ func TestExecute_StreamsEvents(t *testing.T) {
 		t.Errorf("text = %q, want Hello from Claude", text.Text)
 	}
 
-	// sequence番号が連番であること
+	// verify sequence numbers are consecutive
 	for i, ev := range events {
 		if ev.Sequence != int64(i+1) {
 			t.Errorf("event[%d].Sequence = %d, want %d", i, ev.Sequence, i+1)
@@ -114,14 +114,14 @@ func TestExecute_InvalidAgent(t *testing.T) {
 		Prompt:           "hello",
 		WorkingDirectory: "/tmp",
 	}))
-	// サーバーストリーミングではエラーがストリームから返される場合がある
+	// In server streaming, errors may be returned from the stream
 	if err != nil {
 		if connect.CodeOf(err) != connect.CodeInvalidArgument {
 			t.Errorf("code = %v, want InvalidArgument", connect.CodeOf(err))
 		}
 		return
 	}
-	// ストリームが返された場合、Receiveでエラーを確認
+	// If a stream was returned, check for errors via Receive
 	for stream.Receive() {
 	}
 	err = stream.Err()
@@ -196,7 +196,7 @@ also not json
 	for stream.Receive() {
 		count++
 	}
-	// 不正なJSON行はスキップされ、テキストイベントだけが送信される
+	// Unparseable JSON lines are skipped; only the text event is sent
 	if count != 1 {
 		t.Errorf("got %d events, want 1 (unparseable lines should be skipped)", count)
 	}

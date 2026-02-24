@@ -19,8 +19,8 @@ export interface UseAgentResult extends UseStreamResult {
 }
 
 /**
- * Execute RPCを呼び出すフック。
- * useStreamを内部で使用し、ストリーミング状態管理を委譲する。
+ * Hook to invoke the Execute RPC.
+ * Uses useStream internally and delegates streaming state management.
  */
 export function useAgent(): UseAgentResult {
   const transport = useTransport();

@@ -51,7 +51,7 @@ func TestClaudeAdapter_Start_WithSessionID(t *testing.T) {
 		t.Fatalf("Start: %v", err)
 	}
 
-	// --resume sess_abc123 が含まれるか確認
+	// Verify --resume sess_abc123 is included
 	found := false
 	for i, arg := range spec.Command {
 		if arg == "--resume" && i+1 < len(spec.Command) && spec.Command[i+1] == "sess_abc123" {
