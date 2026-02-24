@@ -146,6 +146,5 @@ func (a *ClaudeAdapter) ContinueFlags(sessionID string) []string {
 }
 
 func (a *ClaudeAdapter) Available() bool {
-	_, err := exec.LookPath("claude")
-	return err == nil
+	return exec.Command("docker", "image", "inspect", claudeImage).Run() == nil
 }
