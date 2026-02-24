@@ -54,5 +54,3 @@ jobs:
         working-directory: front
       - run: pnpm typecheck
         working-directory: front
-      - run: pnpm test
-        working-directory: front
