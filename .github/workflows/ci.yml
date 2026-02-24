@@ -44,6 +44,8 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: front/package.json
+      - uses: bufbuild/buf-setup-action@v1
+      - run: buf generate
       - run: pnpm install --frozen-lockfile
         working-directory: front
       - run: pnpm lint
