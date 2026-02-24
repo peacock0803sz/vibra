@@ -37,8 +37,8 @@ func (a *ClaudeAdapter) Start(_ context.Context, req *agentv1.ExecuteRequest) (*
 				ContainerPath: "/workspace",
 			},
 		},
-		CPUQuota:    200000, // 2 CPU cores
-		MemoryLimit: 2 * 1024 * 1024 * 1024, // 2 GiB
+		CPUQuota:    200000,                  // 2 CPU cores — TODO: make configurable per adapter
+		MemoryLimit: 2 * 1024 * 1024 * 1024, // 2 GiB — TODO: make configurable per adapter
 	}, nil
 }
 
