@@ -32,6 +32,9 @@ func main() {
 
 	// Load sandbox configuration from environment.
 	sandboxCfg := sandbox.NewConfigFromEnv()
+	if len(sandboxCfg.AllowedDirs) == 0 {
+		log.Fatal("VIBRA_ALLOWED_DIRS is required (comma-separated list of allowed working directories)")
+	}
 
 	// Auth interceptor (Tailscale headers + Bearer token fallback).
 	authInterceptor := auth.NewInterceptor(&auth.InterceptorConfig{})
