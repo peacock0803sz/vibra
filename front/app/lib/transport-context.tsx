@@ -1,5 +1,6 @@
-import { createContext, useContext, useMemo } from "react";
 import type { Transport } from "@connectrpc/connect";
+import { createContext, useContext, useMemo } from "react";
+
 import { createTransport } from "./connect-client";
 
 const TransportContext = createContext<Transport | null>(null);
@@ -16,11 +17,7 @@ export function TransportProvider({
   children: React.ReactNode;
 }) {
   const transport = useMemo(() => createTransport(baseUrl), [baseUrl]);
-  return (
-    <TransportContext value={transport}>
-      {children}
-    </TransportContext>
-  );
+  return <TransportContext value={transport}>{children}</TransportContext>;
 }
 
 /**

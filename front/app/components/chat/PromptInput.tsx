@@ -30,20 +30,17 @@ export function PromptInput({ onSubmit, disabled = false }: PromptInputProps) {
     [handleSubmit],
   );
 
-  const handleInput = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setValue(e.target.value);
-      // 自動リサイズ (最大200px)
-      const el = e.target;
-      el.style.height = "auto";
-      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
-    },
-    [],
-  );
+  const handleInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+    // 自動リサイズ (最大200px)
+    const el = e.target;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+  }, []);
 
   return (
-    <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-      <div className="flex gap-2 items-end max-w-4xl mx-auto">
+    <div className="border-t border-gray-200 p-4 dark:border-gray-700">
+      <div className="mx-auto flex max-w-4xl items-end gap-2">
         <textarea
           ref={textareaRef}
           value={value}
@@ -52,12 +49,12 @@ export function PromptInput({ onSubmit, disabled = false }: PromptInputProps) {
           placeholder="Send a message..."
           disabled={disabled}
           rows={1}
-          className="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 placeholder:text-gray-400"
+          className="flex-1 resize-none rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800"
         />
         <button
           onClick={handleSubmit}
           disabled={disabled || !value.trim()}
-          className="shrink-0 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="shrink-0 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           Send
         </button>

@@ -1,11 +1,8 @@
-import { useCallback, useMemo } from "react";
-import { createClient } from "@connectrpc/connect";
 import { create } from "@bufbuild/protobuf";
-import {
-  AgentService,
-  AgentType,
-  ExecuteRequestSchema,
-} from "@gen/vibra/agent/v1/agent_pb";
+import { createClient } from "@connectrpc/connect";
+import { AgentService, AgentType, ExecuteRequestSchema } from "@gen/vibra/agent/v1/agent_pb";
+import { useCallback, useMemo } from "react";
+
 import { useTransport } from "../transport-context";
 import { useStream } from "./useStream";
 import type { UseStreamResult } from "./useStream";
@@ -29,10 +26,7 @@ export function useAgent(): UseAgentResult {
   const transport = useTransport();
   const stream = useStream();
 
-  const client = useMemo(
-    () => createClient(AgentService, transport),
-    [transport],
-  );
+  const client = useMemo(() => createClient(AgentService, transport), [transport]);
 
   const execute = useCallback(
     async (params: ExecuteParams) => {

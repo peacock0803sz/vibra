@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef } from "react";
 import type { StreamEvent } from "@gen/vibra/agent/v1/agent_pb";
+import { useState, useCallback, useRef } from "react";
 
 export type StreamStatus = "idle" | "streaming" | "done" | "error";
 

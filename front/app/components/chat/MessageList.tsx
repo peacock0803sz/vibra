@@ -6,11 +6,9 @@ interface MessageListProps {
 
 export function MessageList({ events }: MessageListProps) {
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-3">
+    <div className="flex-1 space-y-3 overflow-y-auto p-4">
       {events.length === 0 && (
-        <p className="text-center text-gray-400 mt-8">
-          Send a prompt to start a conversation.
-        </p>
+        <p className="mt-8 text-center text-gray-400">Send a prompt to start a conversation.</p>
       )}
       {events.map((ev, i) => (
         <MessageItem key={i} event={ev} />
@@ -24,9 +22,7 @@ function MessageItem({ event }: { event: StreamEvent }) {
     case "text":
       return <TextMessage text={event.payload.value} />;
     case "toolUse":
-      return (
-        <ToolUseMessage toolName={event.payload.value.toolName} />
-      );
+      return <ToolUseMessage toolName={event.payload.value.toolName} />;
     case "toolResult":
       return (
         <ToolResultMessage
@@ -52,7 +48,7 @@ function MessageItem({ event }: { event: StreamEvent }) {
 
 function TextMessage({ text }: { text: string }) {
   return (
-    <div className="rounded-lg bg-gray-50 dark:bg-gray-800 px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap break-words">
+    <div className="rounded-lg bg-gray-50 px-4 py-3 text-sm leading-relaxed break-words whitespace-pre-wrap dark:bg-gray-800">
       {text}
     </div>
   );
@@ -60,9 +56,10 @@ function TextMessage({ text }: { text: string }) {
 
 function ToolUseMessage({ toolName }: { toolName: string }) {
   return (
-    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 px-4 py-1">
-      <span className="inline-block w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-      Using tool: <code className="font-mono bg-gray-100 dark:bg-gray-700 px-1 rounded">{toolName}</code>
+    <div className="flex items-center gap-2 px-4 py-1 text-xs text-gray-500 dark:text-gray-400">
+      <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-blue-400" />
+      Using tool:{" "}
+      <code className="rounded bg-gray-100 px-1 font-mono dark:bg-gray-700">{toolName}</code>
     </div>
   );
 }
@@ -79,18 +76,14 @@ function ToolResultMessage({
   language: string;
 }) {
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-xs">
-        <span className={success ? "text-green-600" : "text-red-500"}>
-          {success ? "✓" : "✗"}
-        </span>
+    <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 text-xs dark:bg-gray-800">
+        <span className={success ? "text-green-600" : "text-red-500"}>{success ? "✓" : "✗"}</span>
         <code className="font-mono">{toolName}</code>
-        {language && (
-          <span className="ml-auto text-gray-400">{language}</span>
-        )}
+        {language && <span className="ml-auto text-gray-400">{language}</span>}
       </div>
       {output && (
-        <pre className="p-3 text-xs font-mono overflow-x-auto bg-gray-50 dark:bg-gray-900 whitespace-pre-wrap break-words">
+        <pre className="overflow-x-auto bg-gray-50 p-3 font-mono text-xs break-words whitespace-pre-wrap dark:bg-gray-900">
           <code>{output}</code>
         </pre>
       )}
@@ -98,16 +91,10 @@ function ToolResultMessage({
   );
 }
 
-function SessionMessage({
-  sessionId,
-  costMicros,
-}: {
-  sessionId: string;
-  costMicros: bigint;
-}) {
+function SessionMessage({ sessionId, costMicros }: { sessionId: string; costMicros: bigint }) {
   const costUSD = Number(costMicros) / 1_000_000;
   return (
-    <div className="text-xs text-gray-400 text-center py-1">
+    <div className="py-1 text-center text-xs text-gray-400">
       Session: {sessionId.slice(0, 12)}...
       {costMicros > 0n && ` · $${costUSD.toFixed(4)}`}
     </div>
@@ -116,7 +103,7 @@ function SessionMessage({
 
 function ErrorMessage({ message }: { message: string }) {
   return (
-    <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+    <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
       {message}
     </div>
   );
