@@ -4,12 +4,13 @@ go 1.25.7
 
 require (
 	connectrpc.com/connect v1.19.1
+	connectrpc.com/cors v0.1.0
 	github.com/docker/docker v28.5.2+incompatible
+	github.com/rs/cors v1.11.1
 	google.golang.org/protobuf v1.36.11
 )
 
 require (
-	connectrpc.com/cors v0.1.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/containerd/errdefs v1.0.0 // indirect
@@ -28,7 +29,6 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/rs/cors v1.11.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.65.0 // indirect
 	go.opentelemetry.io/otel v1.40.0 // indirect
