@@ -1,18 +1,16 @@
 import { useCallback } from "react";
 
-import { useAgent } from "~/lib/hooks/useAgent";
+import type { UseAgentResult } from "~/lib/hooks/useAgent";
 
 import { MessageList } from "./MessageList";
 import { PromptInput } from "./PromptInput";
 
-interface ChatWindowProps {
+interface ChatWindowProps extends UseAgentResult {
   sessionId?: string;
   workingDirectory?: string;
 }
 
-export function ChatWindow({ sessionId, workingDirectory }: ChatWindowProps) {
-  const { events, status, error, execute } = useAgent();
-
+export function ChatWindow({ sessionId, workingDirectory, events, status, error, execute }: ChatWindowProps) {
   const handleSubmit = useCallback(
     (prompt: string) => {
       execute({
