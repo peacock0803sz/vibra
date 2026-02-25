@@ -32,8 +32,11 @@ func TestClaudeAdapter_Start(t *testing.T) {
 	if spec.WorkDir != "/workspace" {
 		t.Errorf("WorkDir = %q, want /workspace", spec.WorkDir)
 	}
-	if len(spec.Volumes) != 1 || spec.Volumes[0].HostPath != "/home/user/project" {
-		t.Errorf("Volumes = %v, want host mount to /home/user/project", spec.Volumes)
+	if len(spec.Volumes) < 2 || spec.Volumes[0].HostPath != "/home/user/project" {
+		t.Errorf("Volumes = %v, want first mount to /home/user/project", spec.Volumes)
+	}
+	if spec.Volumes[1].HostPath != "vibra-claude-home" || !spec.Volumes[1].IsVolume {
+		t.Errorf("Volumes[1] = %+v, want named volume vibra-claude-home", spec.Volumes[1])
 	}
 }
 
@@ -154,6 +157,43 @@ func TestClaudeAdapter_ParseLine_Result(t *testing.T) {
 	}
 	if sess.Session.CostMicros != 3000 {
 		t.Errorf("cost_micros = %d, want 3000", sess.Session.CostMicros)
+	}
+}
+
+func TestClaudeAdapter_ParseLine_VerboseText(t *testing.T) {
+	a := NewClaudeAdapter()
+	// Actual verbose stream-json output from Claude CLI
+	line := `{"type":"assistant","message":{"model":"claude-opus-4-6","id":"msg_01","type":"message","role":"assistant","content":[{"type":"text","text":"Hello! How can I help you today?"}],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":3,"output_tokens":1}}}`
+
+	ev := a.ParseLine(line)
+	if ev == nil {
+		t.Fatal("ParseLine returned nil for verbose text event")
+	}
+
+	text, ok := ev.Payload.(*agentv1.StreamEvent_Text)
+	if !ok {
+		t.Fatalf("payload type = %T, want StreamEvent_Text", ev.Payload)
+	}
+	if text.Text != "Hello! How can I help you today?" {
+		t.Errorf("text = %q, want 'Hello! How can I help you today?'", text.Text)
+	}
+}
+
+func TestClaudeAdapter_ParseLine_VerboseResult(t *testing.T) {
+	a := NewClaudeAdapter()
+	line := `{"type":"result","subtype":"success","session_id":"sess_abc","total_cost_usd":0.01677}`
+
+	ev := a.ParseLine(line)
+	if ev == nil {
+		t.Fatal("ParseLine returned nil for verbose result event")
+	}
+
+	sess, ok := ev.Payload.(*agentv1.StreamEvent_Session)
+	if !ok {
+		t.Fatalf("payload type = %T, want StreamEvent_Session", ev.Payload)
+	}
+	if sess.Session.CostMicros != 16770 {
+		t.Errorf("cost_micros = %d, want 16770", sess.Session.CostMicros)
 	}
 }
 

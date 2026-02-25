@@ -68,15 +68,17 @@ func (s *AgentServer) Execute(
 		return connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	// Filter environment variables
-	filteredEnv := s.sandbox.FilterEnv(msg.Env)
+	// Collect environment variables: server-side first, then client overrides.
+	serverEnv := s.sandbox.CollectHostEnv()
+	clientEnv := s.sandbox.FilterEnv(msg.Env)
 
 	// Build ContainerSpec
 	spec, err := a.Start(ctx, msg)
 	if err != nil {
 		return connect.NewError(connect.CodeInternal, fmt.Errorf("adapter start: %w", err))
 	}
-	spec.Env = append(spec.Env, filteredEnv...)
+	spec.Env = append(spec.Env, serverEnv...)
+	spec.Env = append(spec.Env, clientEnv...)
 
 	// Apply permissions
 	container.ApplyPermission(spec, msg.PermissionMode)
