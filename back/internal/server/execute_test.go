@@ -44,7 +44,7 @@ func TestExecute_StreamsEvents(t *testing.T) {
 		AllowedEnvs: []string{"ANTHROPIC_API_KEY"},
 	}
 
-	srv := NewAgentServer(runner, cfg)
+	srv := NewAgentServer(runner, cfg, "")
 
 	_, handler := agentv1connect.NewAgentServiceHandler(srv)
 	ts := httptest.NewServer(handler)
@@ -101,7 +101,7 @@ func TestExecute_StreamsEvents(t *testing.T) {
 func TestExecute_InvalidAgent(t *testing.T) {
 	runner := container.NewRunner(&fakeRuntime{})
 	cfg := &sandbox.Config{AllowedDirs: []string{"/tmp"}}
-	srv := NewAgentServer(runner, cfg)
+	srv := NewAgentServer(runner, cfg, "")
 
 	_, handler := agentv1connect.NewAgentServiceHandler(srv)
 	ts := httptest.NewServer(handler)
@@ -136,7 +136,7 @@ func TestExecute_InvalidAgent(t *testing.T) {
 func TestExecute_DisallowedDirectory(t *testing.T) {
 	runner := container.NewRunner(&fakeRuntime{})
 	cfg := &sandbox.Config{AllowedDirs: []string{"/tmp"}}
-	srv := NewAgentServer(runner, cfg)
+	srv := NewAgentServer(runner, cfg, "")
 
 	_, handler := agentv1connect.NewAgentServiceHandler(srv)
 	ts := httptest.NewServer(handler)
@@ -175,7 +175,7 @@ also not json
 	}
 	runner := container.NewRunner(rt)
 	cfg := &sandbox.Config{AllowedDirs: []string{"/tmp"}}
-	srv := NewAgentServer(runner, cfg)
+	srv := NewAgentServer(runner, cfg, "")
 
 	_, handler := agentv1connect.NewAgentServiceHandler(srv)
 	ts := httptest.NewServer(handler)

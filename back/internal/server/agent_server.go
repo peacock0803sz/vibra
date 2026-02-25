@@ -22,16 +22,19 @@ import (
 type AgentServer struct {
 	agentv1connect.UnimplementedAgentServiceHandler
 
-	runner   *container.Runner
-	sandbox  *sandbox.Config
-	adapters map[agentv1.AgentType]adapter.AgentAdapter
+	runner         *container.Runner
+	sandbox        *sandbox.Config
+	defaultWorkDir string
+	adapters       map[agentv1.AgentType]adapter.AgentAdapter
 }
 
 // NewAgentServer creates an AgentServer with the given container runner and sandbox config.
-func NewAgentServer(runner *container.Runner, sandbox *sandbox.Config) *AgentServer {
+// defaultWorkDir is used when the client does not specify a working directory.
+func NewAgentServer(runner *container.Runner, sandbox *sandbox.Config, defaultWorkDir string) *AgentServer {
 	return &AgentServer{
-		runner:  runner,
-		sandbox: sandbox,
+		runner:         runner,
+		sandbox:        sandbox,
+		defaultWorkDir: defaultWorkDir,
 		adapters: map[agentv1.AgentType]adapter.AgentAdapter{
 			agentv1.AgentType_AGENT_TYPE_CLAUDE: adapter.NewClaudeAdapter(),
 		},
@@ -50,6 +53,14 @@ func (s *AgentServer) Execute(
 	a, ok := s.adapters[msg.Agent]
 	if !ok {
 		return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("unknown agent type: %v", msg.Agent))
+	}
+
+	// Apply default working directory if not specified.
+	if msg.WorkingDirectory == "" {
+		if s.defaultWorkDir == "" {
+			return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("working directory is required"))
+		}
+		msg.WorkingDirectory = s.defaultWorkDir
 	}
 
 	// Validate working directory
