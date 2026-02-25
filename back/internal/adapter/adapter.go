@@ -43,4 +43,7 @@ type AgentAdapter interface {
 
 	// Available reports whether the agent CLI is installed and version-compatible.
 	Available() bool
+
+	// ModelName returns the model identifier used by this adapter.
+	ModelName() string
 }
