@@ -22,7 +22,7 @@ export function PromptInput({ onSubmit, disabled = false }: PromptInputProps) {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === "Enter" && !e.shiftKey) {
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         handleSubmit();
       }
@@ -46,7 +46,7 @@ export function PromptInput({ onSubmit, disabled = false }: PromptInputProps) {
           value={value}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
-          placeholder="Send a message..."
+          placeholder="Send a message... (Ctrl+Enter to send)"
           disabled={disabled}
           rows={1}
           className="flex-1 resize-none rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800"
