@@ -7,6 +7,35 @@ import (
 	"testing"
 )
 
+func TestAuthenticate_DevUser(t *testing.T) {
+	// DevUser bypasses all authentication; no headers required.
+	headers := http.Header{}
+	cfg := &InterceptorConfig{DevUser: "dev@local"}
+
+	user, err := authenticate(headers, cfg)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if user != "dev@local" {
+		t.Errorf("got user %q, want %q", user, "dev@local")
+	}
+}
+
+func TestAuthenticate_DevUserPriority(t *testing.T) {
+	// DevUser takes priority even when Tailscale header is present.
+	headers := http.Header{}
+	headers.Set(headerTailscaleUserLogin, "ts-user@example.com")
+	cfg := &InterceptorConfig{DevUser: "dev@local"}
+
+	user, err := authenticate(headers, cfg)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if user != "dev@local" {
+		t.Errorf("got user %q, want %q", user, "dev@local")
+	}
+}
+
 func TestAuthenticate_TailscaleHeader(t *testing.T) {
 	headers := http.Header{}
 	headers.Set(headerTailscaleUserLogin, "user@example.com")
