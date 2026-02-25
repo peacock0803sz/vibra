@@ -9,7 +9,6 @@ import { PromptInput } from "./PromptInput";
 const STORAGE_KEY = "vibra:workingDirectory";
 
 interface ChatWindowProps {
-  sessionId?: string;
   workingDirectory?: string;
 }
 
