@@ -64,6 +64,36 @@ func TestApplyPermission_Full(t *testing.T) {
 	}
 }
 
+func TestApplyPermission_SystemVolumePreserved(t *testing.T) {
+	spec := &adapter.ContainerSpec{
+		Image: "test:latest",
+		Volumes: []adapter.VolumeMount{
+			{HostPath: "/src", ContainerPath: "/workspace"},
+			{HostPath: "named-vol", ContainerPath: "/home/agent", IsVolume: true, System: true},
+		},
+	}
+
+	// OBSERVE sets non-system volumes to read-only but must not touch system volumes.
+	ApplyPermission(spec, agentv1.PermissionMode_PERMISSION_MODE_OBSERVE)
+
+	if !spec.Volumes[0].ReadOnly {
+		t.Error("non-system volume should be read-only in OBSERVE mode")
+	}
+	if spec.Volumes[1].ReadOnly {
+		t.Error("system volume should remain read-write regardless of permission mode")
+	}
+
+	// EDIT sets non-system volumes to read-write; system volume should still be unaffected.
+	ApplyPermission(spec, agentv1.PermissionMode_PERMISSION_MODE_EDIT)
+
+	if spec.Volumes[0].ReadOnly {
+		t.Error("non-system volume should be read-write in EDIT mode")
+	}
+	if spec.Volumes[1].ReadOnly {
+		t.Error("system volume should remain read-write regardless of permission mode")
+	}
+}
+
 func TestApplyPermission_Unspecified(t *testing.T) {
 	spec := makeSpec()
 	ApplyPermission(spec, agentv1.PermissionMode_PERMISSION_MODE_UNSPECIFIED)
