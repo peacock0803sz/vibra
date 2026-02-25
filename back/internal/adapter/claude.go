@@ -152,7 +152,9 @@ func (a *ClaudeAdapter) parseMessage(msg *claudeMsg) *agentv1.StreamEvent {
 	case "tool_result":
 		// Content may be a JSON string or a complex object; extract as string.
 		var output string
-		_ = json.Unmarshal(msg.Content, &output)
+		if err := json.Unmarshal(msg.Content, &output); err != nil {
+			output = string(msg.Content)
+		}
 		return &agentv1.StreamEvent{
 			Payload: &agentv1.StreamEvent_ToolResult{
 				ToolResult: &agentv1.ToolResult{
