@@ -69,19 +69,25 @@ func TestExecute_StreamsEvents(t *testing.T) {
 		t.Fatalf("stream error: %v", err)
 	}
 
-	if len(events) != 3 {
-		t.Fatalf("got %d events, want 3", len(events))
+	// EnvironmentInfo (sequence=1) + init session + text + result session = 4 events
+	if len(events) != 4 {
+		t.Fatalf("got %d events, want 4", len(events))
 	}
 
-	// init event
-	if _, ok := events[0].Payload.(*agentv1.StreamEvent_Session); !ok {
-		t.Errorf("event[0] = %T, want Session", events[0].Payload)
+	// environment info event (first, sequence=1)
+	if _, ok := events[0].Payload.(*agentv1.StreamEvent_Environment); !ok {
+		t.Errorf("event[0] = %T, want Environment", events[0].Payload)
+	}
+
+	// init session event
+	if _, ok := events[1].Payload.(*agentv1.StreamEvent_Session); !ok {
+		t.Errorf("event[1] = %T, want Session", events[1].Payload)
 	}
 
 	// text event
-	text, ok := events[1].Payload.(*agentv1.StreamEvent_Text)
+	text, ok := events[2].Payload.(*agentv1.StreamEvent_Text)
 	if !ok {
-		t.Fatalf("event[1] = %T, want Text", events[1].Payload)
+		t.Fatalf("event[2] = %T, want Text", events[2].Payload)
 	}
 	if text.Text != "Hello from Claude" {
 		t.Errorf("text = %q, want Hello from Claude", text.Text)
@@ -196,8 +202,8 @@ also not json
 	for stream.Receive() {
 		count++
 	}
-	// Unparseable JSON lines are skipped; only the text event is sent
-	if count != 1 {
-		t.Errorf("got %d events, want 1 (unparseable lines should be skipped)", count)
+	// EnvironmentInfo (sequence=1) + text event = 2; unparseable lines are skipped
+	if count != 2 {
+		t.Errorf("got %d events, want 2 (unparseable lines should be skipped)", count)
 	}
 }

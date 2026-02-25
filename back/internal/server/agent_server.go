@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"sync/atomic"
 
 	"connectrpc.com/connect"
@@ -70,6 +71,26 @@ func (s *AgentServer) Execute(
 	// Apply permissions
 	container.ApplyPermission(spec, msg.PermissionMode)
 
+	// Emit EnvironmentInfo as sequence=1 before container start (FR-001, FR-007)
+	hostname, _ := os.Hostname()
+	gitInfo := GetGitInfo()
+	envEvent := &agentv1.StreamEvent{
+		Sequence:  1,
+		Timestamp: timestamppb.Now(),
+		Payload: &agentv1.StreamEvent_Environment{
+			Environment: &agentv1.EnvironmentInfo{
+				Hostname:   hostname,
+				Repository: gitInfo.Repository,
+				Branch:     gitInfo.Branch,
+				Agent:      msg.Agent,
+				ModelName:  a.ModelName(),
+			},
+		},
+	}
+	if err := stream.Send(&agentv1.ExecuteResponse{Event: envEvent}); err != nil {
+		return err
+	}
+
 	// Start container
 	logs, err := s.runner.Run(ctx, spec)
 	if err != nil {
@@ -77,7 +98,7 @@ func (s *AgentServer) Execute(
 	}
 	defer logs.Close()
 
-	// Parse stdout line by line and stream events
+	// Parse stdout line by line and stream events (sequence starts at 2)
 	return s.streamLines(ctx, a, logs, stream)
 }
 
@@ -88,6 +109,7 @@ func (s *AgentServer) streamLines(
 	stream *connect.ServerStream[agentv1.ExecuteResponse],
 ) error {
 	var seq atomic.Int64
+	seq.Store(1) // sequence=1 は EnvironmentInfo 用に予約済み
 	scanner := bufio.NewScanner(logs)
 	// Handle large JSON lines (up to 1MB)
 	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
