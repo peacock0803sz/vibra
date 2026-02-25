@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+import type { StreamEvent } from "@gen/vibra/agent/v1/agent_pb";
 import { useAgent } from "~/lib/hooks/useAgent";
 
 import { MessageList } from "./MessageList";
@@ -12,10 +13,28 @@ interface ChatWindowProps {
   workingDirectory?: string;
 }
 
-export function ChatWindow({ sessionId, workingDirectory }: ChatWindowProps) {
+// Extract the Claude-returned session ID from stream events.
+function extractClaudeSessionId(events: StreamEvent[]): string | undefined {
+  for (const ev of events) {
+    if (ev.payload.case === "session" && ev.payload.value.sessionId) {
+      return ev.payload.value.sessionId;
+    }
+  }
+  return undefined;
+}
+
+export function ChatWindow({ workingDirectory }: ChatWindowProps) {
   const { events, status, error, execute } = useAgent();
 
   const [workDir, setWorkDir] = useState(workingDirectory ?? "");
+  // Tracks the Claude-returned session ID for --resume.
+  const claudeSessionRef = useRef<string | undefined>(undefined);
+
+  // Update Claude session ID whenever events change.
+  useEffect(() => {
+    const id = extractClaudeSessionId(events);
+    if (id) claudeSessionRef.current = id;
+  }, [events]);
 
   // Restore last-used directory from localStorage on mount.
   useEffect(() => {
@@ -35,11 +54,11 @@ export function ChatWindow({ sessionId, workingDirectory }: ChatWindowProps) {
     (prompt: string) => {
       execute({
         prompt,
-        sessionId,
+        sessionId: claudeSessionRef.current,
         workingDirectory: workDir,
       });
     },
-    [execute, sessionId, workDir],
+    [execute, workDir],
   );
 
   return (
