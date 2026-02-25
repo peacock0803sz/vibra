@@ -70,6 +70,18 @@ func (c *Config) ValidateDir(dir string) error {
 	return fmt.Errorf("directory %q not in allowlist", dir)
 }
 
+// CollectHostEnv reads allowed environment variables from the host process.
+// Returns a slice of "KEY=VALUE" strings for keys that are set.
+func (c *Config) CollectHostEnv() []string {
+	var result []string
+	for _, key := range c.AllowedEnvs {
+		if v := os.Getenv(key); v != "" {
+			result = append(result, key+"="+v)
+		}
+	}
+	return result
+}
+
 // FilterEnv filters environment variables, keeping only keys in the allowlist.
 // Returns a slice of "KEY=VALUE" strings.
 func (c *Config) FilterEnv(env map[string]string) []string {

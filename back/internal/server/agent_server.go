@@ -22,16 +22,19 @@ import (
 type AgentServer struct {
 	agentv1connect.UnimplementedAgentServiceHandler
 
-	runner   *container.Runner
-	sandbox  *sandbox.Config
-	adapters map[agentv1.AgentType]adapter.AgentAdapter
+	runner         *container.Runner
+	sandbox        *sandbox.Config
+	defaultWorkDir string
+	adapters       map[agentv1.AgentType]adapter.AgentAdapter
 }
 
 // NewAgentServer creates an AgentServer with the given container runner and sandbox config.
-func NewAgentServer(runner *container.Runner, sandbox *sandbox.Config) *AgentServer {
+// defaultWorkDir is used when the client does not specify a working directory.
+func NewAgentServer(runner *container.Runner, sandbox *sandbox.Config, defaultWorkDir string) *AgentServer {
 	return &AgentServer{
-		runner:  runner,
-		sandbox: sandbox,
+		runner:         runner,
+		sandbox:        sandbox,
+		defaultWorkDir: defaultWorkDir,
 		adapters: map[agentv1.AgentType]adapter.AgentAdapter{
 			agentv1.AgentType_AGENT_TYPE_CLAUDE: adapter.NewClaudeAdapter(),
 		},
@@ -52,20 +55,30 @@ func (s *AgentServer) Execute(
 		return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("unknown agent type: %v", msg.Agent))
 	}
 
+	// Apply default working directory if not specified.
+	if msg.WorkingDirectory == "" {
+		if s.defaultWorkDir == "" {
+			return connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("working directory is required"))
+		}
+		msg.WorkingDirectory = s.defaultWorkDir
+	}
+
 	// Validate working directory
 	if err := s.sandbox.ValidateDir(msg.WorkingDirectory); err != nil {
 		return connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	// Filter environment variables
-	filteredEnv := s.sandbox.FilterEnv(msg.Env)
+	// Collect environment variables: server-side first, then client overrides.
+	serverEnv := s.sandbox.CollectHostEnv()
+	clientEnv := s.sandbox.FilterEnv(msg.Env)
 
 	// Build ContainerSpec
 	spec, err := a.Start(ctx, msg)
 	if err != nil {
 		return connect.NewError(connect.CodeInternal, fmt.Errorf("adapter start: %w", err))
 	}
-	spec.Env = append(spec.Env, filteredEnv...)
+	spec.Env = append(spec.Env, serverEnv...)
+	spec.Env = append(spec.Env, clientEnv...)
 
 	// Apply permissions
 	container.ApplyPermission(spec, msg.PermissionMode)

@@ -37,12 +37,17 @@ func main() {
 	}
 
 	// Auth interceptor (Tailscale headers + Bearer token fallback).
-	authInterceptor := auth.NewInterceptor(&auth.InterceptorConfig{})
+	authInterceptor := auth.NewInterceptor(&auth.InterceptorConfig{
+		DevUser: os.Getenv("VIBRA_DEV_USER"),
+	})
+
+	// Default working directory for requests that omit it (useful for local dev).
+	defaultWorkDir := os.Getenv("VIBRA_DEFAULT_WORKDIR")
 
 	// Register ConnectRPC handlers.
 	mux := http.NewServeMux()
 	path, handler := agentv1connect.NewAgentServiceHandler(
-		server.NewAgentServer(runner, sandboxCfg),
+		server.NewAgentServer(runner, sandboxCfg, defaultWorkDir),
 		connect.WithInterceptors(authInterceptor),
 	)
 	mux.Handle(path, handler)

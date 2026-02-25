@@ -67,7 +67,7 @@ func (m *mockRuntime) Start(ctx context.Context, id string) error {
 	return nil
 }
 
-func (m *mockRuntime) Logs(ctx context.Context, id string) (io.ReadCloser, error) {
+func (m *mockRuntime) Attach(ctx context.Context, id string) (io.ReadCloser, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	c, ok := m.containers[id]

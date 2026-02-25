@@ -15,7 +15,7 @@ export default function ChatRoute() {
         <h1 className="text-lg font-semibold">vibra</h1>
         <span className="font-mono text-xs text-gray-400">{sessionId?.slice(0, 8)}</span>
       </header>
-      <ChatWindow sessionId={sessionId} />
+      <ChatWindow />
     </div>
   );
 }

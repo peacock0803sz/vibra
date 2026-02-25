@@ -43,6 +43,41 @@ func TestValidateDir_NoAllowedDirs(t *testing.T) {
 	}
 }
 
+func TestCollectHostEnv(t *testing.T) {
+	cfg := &Config{
+		AllowedEnvs: []string{"ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY"},
+	}
+
+	t.Setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+	t.Setenv("GEMINI_API_KEY", "gem-test")
+	// OPENAI_API_KEY is intentionally not set.
+
+	result := cfg.CollectHostEnv()
+	sort.Strings(result)
+
+	if len(result) != 2 {
+		t.Fatalf("expected 2 env vars, got %d: %v", len(result), result)
+	}
+
+	want := []string{"ANTHROPIC_API_KEY=sk-ant-test", "GEMINI_API_KEY=gem-test"}
+	for i, got := range result {
+		if got != want[i] {
+			t.Errorf("result[%d] = %q, want %q", i, got, want[i])
+		}
+	}
+}
+
+func TestCollectHostEnv_NoneSet(t *testing.T) {
+	cfg := &Config{
+		AllowedEnvs: []string{"VIBRA_TEST_UNSET_KEY"},
+	}
+
+	result := cfg.CollectHostEnv()
+	if len(result) != 0 {
+		t.Errorf("expected 0 env vars, got %d: %v", len(result), result)
+	}
+}
+
 func TestFilterEnv(t *testing.T) {
 	cfg := &Config{
 		AllowedEnvs: []string{"ANTHROPIC_API_KEY", "OPENAI_API_KEY"},

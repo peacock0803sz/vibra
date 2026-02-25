@@ -6,11 +6,13 @@ import (
 	agentv1 "github.com/peacock0803sz/vibra/back/gen/vibra/agent/v1"
 )
 
-// VolumeMount represents a bind mount from host to container.
+// VolumeMount represents a bind mount or named volume for a container.
 type VolumeMount struct {
-	HostPath      string
+	HostPath      string // host path (bind) or volume name (volume)
 	ContainerPath string
 	ReadOnly      bool
+	System        bool // if true, ApplyPermission won't override ReadOnly
+	IsVolume      bool // if true, HostPath is treated as a Docker named volume
 }
 
 // ContainerSpec defines the configuration for running an agent container.
