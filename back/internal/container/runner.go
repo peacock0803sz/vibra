@@ -13,7 +13,9 @@ type Runtime interface {
 	Ping(ctx context.Context) error
 	Create(ctx context.Context, spec *adapter.ContainerSpec) (string, error)
 	Start(ctx context.Context, id string) error
-	Logs(ctx context.Context, id string) (io.ReadCloser, error)
+	// Attach connects to the container's stdout/stderr stream.
+	// Must be called BEFORE Start to avoid missing early output.
+	Attach(ctx context.Context, id string) (io.ReadCloser, error)
 	Kill(ctx context.Context, id string) error
 	Remove(ctx context.Context, id string) error
 }
@@ -36,16 +38,17 @@ func (r *Runner) Run(ctx context.Context, spec *adapter.ContainerSpec) (io.ReadC
 		return nil, fmt.Errorf("create container: %w", err)
 	}
 
-	if err := r.runtime.Start(ctx, id); err != nil {
+	// Attach before Start so we don't miss early output.
+	logs, err := r.runtime.Attach(ctx, id)
+	if err != nil {
 		_ = r.runtime.Remove(ctx, id)
-		return nil, fmt.Errorf("start container: %w", err)
+		return nil, fmt.Errorf("attach container: %w", err)
 	}
 
-	logs, err := r.runtime.Logs(ctx, id)
-	if err != nil {
-		_ = r.runtime.Kill(ctx, id)
+	if err := r.runtime.Start(ctx, id); err != nil {
+		logs.Close()
 		_ = r.runtime.Remove(ctx, id)
-		return nil, fmt.Errorf("attach logs: %w", err)
+		return nil, fmt.Errorf("start container: %w", err)
 	}
 
 	// Kill and remove container when context is cancelled.

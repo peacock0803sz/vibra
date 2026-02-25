@@ -27,7 +27,7 @@ func (f *fakeRuntime) Create(context.Context, *adapter.ContainerSpec) (string, e
 func (f *fakeRuntime) Start(context.Context, string) error                             { return nil }
 func (f *fakeRuntime) Kill(context.Context, string) error                              { return nil }
 func (f *fakeRuntime) Remove(context.Context, string) error                            { return nil }
-func (f *fakeRuntime) Logs(_ context.Context, _ string) (io.ReadCloser, error) {
+func (f *fakeRuntime) Attach(_ context.Context, _ string) (io.ReadCloser, error) {
 	return io.NopCloser(strings.NewReader(f.output)), nil
 }
 

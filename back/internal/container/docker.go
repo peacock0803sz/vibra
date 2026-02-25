@@ -35,8 +35,12 @@ func (d *DockerRuntime) Ping(ctx context.Context) error {
 func (d *DockerRuntime) Create(ctx context.Context, spec *adapter.ContainerSpec) (string, error) {
 	var mounts []mount.Mount
 	for _, v := range spec.Volumes {
+		mountType := mount.TypeBind
+		if v.IsVolume {
+			mountType = mount.TypeVolume
+		}
 		mounts = append(mounts, mount.Mount{
-			Type:     mount.TypeBind,
+			Type:     mountType,
 			Source:   v.HostPath,
 			Target:   v.ContainerPath,
 			ReadOnly: v.ReadOnly,
@@ -71,12 +75,15 @@ func (d *DockerRuntime) Start(ctx context.Context, id string) error {
 	return d.cli.ContainerStart(ctx, id, container.StartOptions{})
 }
 
-// Logs decodes Docker's multiplexed stream and returns stdout only.
-func (d *DockerRuntime) Logs(ctx context.Context, id string) (io.ReadCloser, error) {
-	raw, err := d.cli.ContainerLogs(ctx, id, container.LogsOptions{
-		ShowStdout: true,
-		ShowStderr: true,
-		Follow:     true,
+// Attach connects to the container's stdout/stderr via Docker attach.
+// Unlike ContainerLogs, this bypasses the logging driver and provides
+// a direct pipe to the container's stdio — no buffering delay.
+// Must be called BEFORE Start.
+func (d *DockerRuntime) Attach(ctx context.Context, id string) (io.ReadCloser, error) {
+	resp, err := d.cli.ContainerAttach(ctx, id, container.AttachOptions{
+		Stream: true,
+		Stdout: true,
+		Stderr: true,
 	})
 	if err != nil {
 		return nil, err
@@ -85,8 +92,8 @@ func (d *DockerRuntime) Logs(ctx context.Context, id string) (io.ReadCloser, err
 	// Demultiplex Docker's stream header format into clean stdout.
 	pr, pw := io.Pipe()
 	go func() {
-		_, err := stdcopy.StdCopy(pw, io.Discard, raw)
-		raw.Close()
+		_, err := stdcopy.StdCopy(pw, io.Discard, resp.Reader)
+		resp.Close()
 		pw.CloseWithError(err)
 	}()
 
