@@ -37,7 +37,9 @@ func main() {
 	}
 
 	// Auth interceptor (Tailscale headers + Bearer token fallback).
-	authInterceptor := auth.NewInterceptor(&auth.InterceptorConfig{})
+	authInterceptor := auth.NewInterceptor(&auth.InterceptorConfig{
+		DevUser: os.Getenv("VIBRA_DEV_USER"),
+	})
 
 	// Register ConnectRPC handlers.
 	mux := http.NewServeMux()
