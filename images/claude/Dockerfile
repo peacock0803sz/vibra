@@ -1,0 +1,33 @@
+FROM node:22-slim
+
+# System dependencies for Playwright Chromium
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    fonts-liberation \
+    libasound2t64 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Claude Code CLI and Playwright with Chromium
+RUN npm install -g @anthropic-ai/claude-code && \
+    npx playwright install --with-deps chromium
+
+# Non-root user for container isolation
+RUN useradd -m -s /bin/bash agent
+USER agent
+WORKDIR /workspace
+
+ENTRYPOINT ["claude"]

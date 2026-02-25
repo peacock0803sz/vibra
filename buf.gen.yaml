@@ -1,0 +1,24 @@
+version: v2
+clean: true
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/peacock0803sz/vibra/back/gen
+plugins:
+  # Go Protobuf message/enum stubs
+  - remote: buf.build/protocolbuffers/go
+    out: back/gen
+    opt: paths=source_relative
+  # Connect-Go service stubs
+  - remote: buf.build/connectrpc/go
+    out: back/gen
+    opt: paths=source_relative
+  # Protobuf-ES (TypeScript messages/enums)
+  - remote: buf.build/bufbuild/es
+    out: front/gen
+  # Connect-ES (TypeScript service clients)
+  - remote: buf.build/connectrpc/es
+    out: front/gen
+inputs:
+  - directory: proto
