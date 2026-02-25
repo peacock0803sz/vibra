@@ -1,6 +1,6 @@
+import type { StreamEvent } from "@gen/vibra/agent/v1/agent_pb";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { StreamEvent } from "@gen/vibra/agent/v1/agent_pb";
 import { useAgent } from "~/lib/hooks/useAgent";
 
 import { MessageList } from "./MessageList";
