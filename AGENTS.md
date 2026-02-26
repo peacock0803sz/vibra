@@ -18,7 +18,7 @@ cd front && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test
 ## Code Style
 
 - Go: standard library conventions, `gofmt`
-- TypeScript: oxlint + oxfmt (Rust-based, zero-config plugins)
+- TypeScript: oxlint + oxfmt (Rust-based, zero-config tools)
 - Proto: `buf lint` enforced
 - All documentation must be in English
 - Commit messages: use emoji prefixes defined in [.gitmessage](.gitmessage)

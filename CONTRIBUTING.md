@@ -38,7 +38,7 @@ cd front && pnpm install && pnpm dev
 ## Code Style
 
 - Go follows standard library conventions. `gofmt` handles formatting.
-- TypeScript uses oxlint for linting and oxfmt for formatting. No extra config needed.
+- TypeScript uses oxlint for linting and oxfmt for formatting (Rust-based, zero-config tools). No extra config needed.
 - Proto files must pass `buf lint`.
 - Write documentation and comments in English.
 - Use emoji prefixes in commit messages. See [.gitmessage](.gitmessage) for the full list.
