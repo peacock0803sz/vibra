@@ -22,10 +22,6 @@ jobs:
         with:
           go-version: "1.25"
 
-      - uses: bufbuild/buf-setup-action@v1
-
-      - run: buf generate
-
       - uses: goreleaser/goreleaser-action@v6
         with:
           version: "~> v2"
@@ -48,10 +44,6 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           package_json_file: front/package.json
-
-      - uses: bufbuild/buf-setup-action@v1
-
-      - run: buf generate
 
       - run: pnpm install --frozen-lockfile
         working-directory: front
