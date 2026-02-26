@@ -2,6 +2,7 @@
   lib,
   stdenv,
   nodejs_22,
+  pnpm,
   pnpmConfigHook,
   fetchPnpmDeps,
 }:
@@ -16,7 +17,7 @@ stdenv.mkDerivation {
     ];
   };
 
-  nativeBuildInputs = [ nodejs_22 pnpmConfigHook ];
+  nativeBuildInputs = [ nodejs_22 pnpm pnpmConfigHook ];
 
   pnpmDeps = fetchPnpmDeps {
     pname = "vibra-front-deps";
