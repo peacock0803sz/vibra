@@ -86,7 +86,7 @@ func (s *AgentServer) Execute(
 
 	// Emit EnvironmentInfo as sequence=1 before container start (FR-001, FR-007)
 	hostname, _ := os.Hostname()
-	gitInfo := GetGitInfo()
+	gitInfo := GetGitInfo(msg.WorkingDirectory)
 	envEvent := &agentv1.StreamEvent{
 		Sequence:  1,
 		Timestamp: timestamppb.Now(),

@@ -11,31 +11,31 @@ type GitInfo struct {
 	Branch     string // branch name or short commit hash (detached HEAD); empty if not a git repo
 }
 
-// GetGitInfo returns git repository context for the current working directory.
+// GetGitInfo returns git repository context for the given directory.
 // Returns an empty GitInfo if git is not installed or the directory is not a git repo.
-func GetGitInfo() GitInfo {
+func GetGitInfo(dir string) GitInfo {
 	if _, err := exec.LookPath("git"); err != nil {
 		return GitInfo{}
 	}
-	remote := getRemoteURL()
+	remote := getRemoteURL(dir)
 	return GitInfo{
 		Repository: ParseRemoteURL(remote),
-		Branch:     GetBranch(),
+		Branch:     GetBranch(dir),
 	}
 }
 
-// GetBranch returns the current branch name.
+// GetBranch returns the current branch name for the given directory.
 // Returns a short commit hash if the HEAD is detached.
 // Returns an empty string if git is unavailable or the directory is not a git repo.
-func GetBranch() string {
-	out, err := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD").Output()
+func GetBranch(dir string) string {
+	out, err := exec.Command("git", "-C", dir, "rev-parse", "--abbrev-ref", "HEAD").Output()
 	if err != nil {
 		return ""
 	}
 	branch := strings.TrimSpace(string(out))
 	if branch == "HEAD" {
-		// detached HEAD: 短縮コミットハッシュで代替
-		hash, err := exec.Command("git", "rev-parse", "--short", "HEAD").Output()
+		// detached HEAD: substitute with short commit hash
+		hash, err := exec.Command("git", "-C", dir, "rev-parse", "--short", "HEAD").Output()
 		if err != nil {
 			return ""
 		}
@@ -75,8 +75,8 @@ func ParseRemoteURL(rawURL string) string {
 }
 
 // getRemoteURL returns the URL of the "origin" remote, or empty string if unavailable.
-func getRemoteURL() string {
-	out, err := exec.Command("git", "remote", "get-url", "origin").Output()
+func getRemoteURL(dir string) string {
+	out, err := exec.Command("git", "-C", dir, "remote", "get-url", "origin").Output()
 	if err != nil {
 		return ""
 	}

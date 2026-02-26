@@ -3,6 +3,7 @@ package server
 import (
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 )
 
@@ -59,43 +60,30 @@ func TestGetBranch_DetachedHead(t *testing.T) {
 		t.Skip("git not available")
 	}
 
-	// 一時ディレクトリにgitリポジトリを作成してdetached HEADをシミュレート
 	dir := t.TempDir()
-	run := func(args ...string) {
+	run := func(t *testing.T, args ...string) {
+		t.Helper()
 		cmd := exec.Command("git", args...)
 		cmd.Dir = dir
-		// git操作ではエラーを無視 (テスト環境のgit設定依存)
-		_ = cmd.Run()
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git %v failed: %v\nOutput: %s", args, err, string(out))
+		}
 	}
 
-	run("init")
-	run("config", "user.email", "test@example.com")
-	run("config", "user.name", "Test")
-	run("commit", "--allow-empty", "-m", "initial")
+	run(t, "init")
+	run(t, "config", "user.email", "test@example.com")
+	run(t, "config", "user.name", "Test")
+	run(t, "commit", "--allow-empty", "-m", "initial")
 
-	// コミットハッシュを取得してdetached HEADに移行
 	out, err := exec.Command("git", "-C", dir, "rev-parse", "HEAD").Output()
 	if err != nil {
 		t.Skip("could not get HEAD commit")
 	}
-	commitHash := string(out[:len(out)-1]) // 改行を除去
+	commitHash := strings.TrimSpace(string(out))
 
-	// detached HEADに切り替え
-	cmd := exec.Command("git", "checkout", "--detach", commitHash)
-	cmd.Dir = dir
-	if err := cmd.Run(); err != nil {
-		t.Skip("could not create detached HEAD")
-	}
+	run(t, "checkout", "--detach", commitHash)
 
-	// テスト対象のリポジトリディレクトリに移動して実行
-	origDir, _ := os.Getwd()
-	defer func() { _ = os.Chdir(origDir) }()
-	if err := os.Chdir(dir); err != nil {
-		t.Fatal(err)
-	}
-
-	branch := GetBranch()
-	// detached HEADの場合、短縮ハッシュ (7文字) が返されること
+	branch := GetBranch(dir)
 	if len(branch) == 0 {
 		t.Error("GetBranch() returned empty string for detached HEAD")
 	}
@@ -110,42 +98,37 @@ func TestGetBranch_NormalBranch(t *testing.T) {
 	}
 
 	dir := t.TempDir()
-	run := func(args ...string) {
+	run := func(t *testing.T, args ...string) {
+		t.Helper()
 		cmd := exec.Command("git", args...)
 		cmd.Dir = dir
-		_ = cmd.Run()
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git %v failed: %v\nOutput: %s", args, err, string(out))
+		}
 	}
 
-	run("init", "-b", "main")
-	run("config", "user.email", "test@example.com")
-	run("config", "user.name", "Test")
-	run("commit", "--allow-empty", "-m", "initial")
+	run(t, "init")
+	run(t, "config", "user.email", "test@example.com")
+	run(t, "config", "user.name", "Test")
+	run(t, "checkout", "-b", "main")
+	run(t, "commit", "--allow-empty", "-m", "initial")
 
-	origDir, _ := os.Getwd()
-	defer func() { _ = os.Chdir(origDir) }()
-	if err := os.Chdir(dir); err != nil {
-		t.Fatal(err)
-	}
-
-	branch := GetBranch()
+	branch := GetBranch(dir)
 	if branch != "main" {
 		t.Errorf("GetBranch() = %q, want %q", branch, "main")
 	}
 }
 
 func TestGetBranch_GitNotFound(t *testing.T) {
-	// PATHからgitを除いた環境でGetBranchが空文字を返すことを確認
 	origPath := os.Getenv("PATH")
 	defer func() { _ = os.Setenv("PATH", origPath) }()
 	_ = os.Setenv("PATH", "")
 
-	// git が見つからない場合は空文字を返すが、
-	// GetBranch は exec.Command を直接使うため LookPath を内部で行わない。
-	// ここでは GetGitInfo 経由のフォールバックをテストする。
-	info := GetGitInfo()
+	// GetGitInfo checks LookPath("git") first, so with empty PATH it should
+	// return an empty GitInfo. If git is still found (absolute path in some
+	// environments), we skip the assertion.
+	info := GetGitInfo(t.TempDir())
 	if info.Branch != "" || info.Repository != "" {
-		// git が実際に利用不可なら空になるはず
-		// PATH が空でも git が見つかる環境では無条件パス
 		t.Log("git still found (absolute path?), skipping git-not-found assertion")
 	}
 }
