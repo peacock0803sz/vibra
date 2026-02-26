@@ -106,7 +106,7 @@ func resolveListenAddr() string {
 	if v := os.Getenv("VIBRA_LISTEN_ADDR"); v != "" {
 		return v
 	}
-	// portless sets HOST and PORT on wrapped processes
+	// portless sets HOST and PORT on wrapped processes (local development only)
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
 	if port != "" {

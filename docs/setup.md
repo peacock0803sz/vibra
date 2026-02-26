@@ -136,9 +136,9 @@ npx @peacock0803sz/vibra
 # or: vibra-front (if installed via Nix)
 ```
 
-### Manual Start (with portless)
+### Manual Start (with portless, local development only)
 
-[portless](https://github.com/vercel-labs/portless) maps named `.localhost` URLs to your local services on port 1355, eliminating numeric port conflicts.
+[portless](https://github.com/vercel-labs/portless) maps named `.localhost` URLs to your local services on port 1355, eliminating numeric port conflicts. This is a local development tool and should not be used in production.
 
 ```bash
 # Terminal 1: Backend via portless (vibra-api.localhost:1355)
