@@ -2,7 +2,8 @@
   lib,
   stdenv,
   nodejs_22,
-  pnpm_10,
+  pnpmConfigHook,
+  fetchPnpmDeps,
   buf,
   protobuf,
 }:
@@ -20,10 +21,9 @@ stdenv.mkDerivation {
     ];
   };
 
-  nativeBuildInputs = [ nodejs_22 pnpm_10.configHook buf protobuf ];
+  nativeBuildInputs = [ nodejs_22 pnpmConfigHook buf protobuf ];
 
-  pnpmDeps = pnpm_10.fetchDeps {
-    inherit (stdenv) system;
+  pnpmDeps = fetchPnpmDeps {
     pname = "vibra-front-deps";
     version = "0.0.0-dev";
     src = lib.fileset.toSource {
@@ -35,6 +35,7 @@ stdenv.mkDerivation {
     };
     sourceRoot = "source/front";
     hash = lib.fakeHash;
+    fetcherVersion = 3;
   };
 
   sourceRoot = "source/front";

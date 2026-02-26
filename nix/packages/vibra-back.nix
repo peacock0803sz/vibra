@@ -27,7 +27,7 @@ buildGoModule {
   ldflags = [
     "-s"
     "-w"
-    "-X main.version=${builtins.placeholder "version" or "0.0.0-dev"}"
+    "-X main.version=0.0.0-dev"
   ];
 
   nativeBuildInputs = [ buf protobuf ];
