@@ -34,6 +34,7 @@ stdenv.mkDerivation {
       ];
     };
     sourceRoot = "source/front";
+    # TODO: Replace with actual hash from first `nix build .#vibra-front` attempt
     hash = lib.fakeHash;
     fetcherVersion = 3;
   };
@@ -59,9 +60,8 @@ stdenv.mkDerivation {
 
     mkdir -p "$out/bin"
     cat > "$out/bin/vibra-front" <<WRAPPER
-    #!${nodejs_22}/bin/node
-    process.argv = [process.argv[0], "$out/lib/vibra-front/start.js"];
-    await import("$out/lib/vibra-front/start.js");
+    #!/usr/bin/env bash
+    exec ${nodejs_22}/bin/node "$out/lib/vibra-front/start.js" "\$@"
     WRAPPER
     chmod +x "$out/bin/vibra-front"
     runHook postInstall

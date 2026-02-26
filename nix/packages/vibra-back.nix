@@ -28,6 +28,8 @@ buildGoModule {
     "-s"
     "-w"
     "-X main.version=0.0.0-dev"
+    "-X main.commit=nix"
+    "-X main.date=unknown"
   ];
 
   nativeBuildInputs = [ buf protobuf ];
