@@ -21,7 +21,7 @@ import (
 	"github.com/peacock0803sz/vibra/back/internal/server"
 )
 
-// ビルド時に -ldflags で注入されるバージョン情報
+// Version information injected at build time via -ldflags
 var (
 	version = "dev"
 	commit  = "none"
