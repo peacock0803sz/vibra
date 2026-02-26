@@ -224,3 +224,7 @@ func (a *ClaudeAdapter) ContinueFlags(sessionID string) []string {
 func (a *ClaudeAdapter) Available() bool {
 	return exec.Command("docker", "image", "inspect", claudeImage).Run() == nil
 }
+
+func (a *ClaudeAdapter) ModelName() string {
+	return "claude-code"
+}
