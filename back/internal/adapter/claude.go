@@ -26,6 +26,7 @@ func (a *ClaudeAdapter) Start(_ context.Context, req *agentv1.ExecuteRequest) (*
 		"claude", "-p", req.Prompt,
 		"--output-format", "stream-json",
 		"--verbose",
+		"--dangerously-skip-permissions",
 	}
 
 	if req.SessionId != "" {
