@@ -69,3 +69,135 @@ jobs:
         working-directory: front
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  container-claude:
+    name: Container (claude)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/peacock0803sz/vibra-claude
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: images/claude
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=claude
+          cache-to: type=gha,mode=max,scope=claude
+
+  container-codex:
+    name: Container (codex)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/peacock0803sz/vibra-codex
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: images/codex
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=codex
+          cache-to: type=gha,mode=max,scope=codex
+
+  container-gemini:
+    name: Container (gemini)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/peacock0803sz/vibra-gemini
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: images/gemini
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=gemini
+          cache-to: type=gha,mode=max,scope=gemini
+
+  release-summary:
+    name: Release Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - goreleaser
+      - npm-publish
+      - container-claude
+      - container-codex
+      - container-gemini
+    steps:
+      - name: Report release status
+        run: |
+          echo "## Release Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Job | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-----|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| GoReleaser | ${{ needs.goreleaser.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| npm Publish | ${{ needs.npm-publish.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Container (claude) | ${{ needs.container-claude.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Container (codex) | ${{ needs.container-codex.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Container (gemini) | ${{ needs.container-gemini.result }} |" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail on critical job failure
+        if: needs.goreleaser.result == 'failure' || needs.npm-publish.result == 'failure'
+        run: exit 1
