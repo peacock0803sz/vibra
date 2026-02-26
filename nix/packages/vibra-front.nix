@@ -29,8 +29,7 @@ stdenv.mkDerivation {
       ];
     };
     sourceRoot = "source/front";
-    # TODO: Replace with actual hash from first `nix build .#vibra-front` attempt
-    hash = lib.fakeHash;
+    hash = "sha256-Ghe/a12HQmWn9kYpaWlBtw4/P+2rmY4nlFKL7sVSmI4=";
     fetcherVersion = 3;
   };
 
