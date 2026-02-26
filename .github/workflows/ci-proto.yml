@@ -1,0 +1,29 @@
+name: Proto Lint
+on:
+  push:
+    branches: [main]
+    paths:
+      - "proto/**"
+      - "buf.gen.yaml"
+      - "buf.yaml"
+      - ".github/workflows/ci-proto.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "proto/**"
+      - "buf.gen.yaml"
+      - "buf.yaml"
+      - ".github/workflows/ci-proto.yml"
+
+jobs:
+  proto:
+    name: Proto Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: bufbuild/buf-action@8f4a1456a0ab6a1eb80ba68e53832e6fcfacc16c # v1.3.0
+        with:
+          lint: true
+          format: true
+          breaking: false # Enable after first merge to main
+          pr_comment: false
