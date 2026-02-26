@@ -102,7 +102,7 @@ Vibra is configured via environment variables:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `VIBRA_LISTEN_ADDR` | `127.0.0.1:13001` | Backend listen address |
-| `VIBRA_CORS_ORIGIN` | `http://127.0.0.1:5173` (dev) / `http://127.0.0.1:3000` (Nix modules) | Allowed CORS origin |
+| `VIBRA_CORS_ORIGIN` | `http://127.0.0.1:5173` | Allowed CORS origin |
 | `VIBRA_ALLOWED_DIRS` | (required) | Comma-separated sandbox directories |
 | `VIBRA_ALLOWED_ENVS` | | Comma-separated env vars for agent containers |
 | `VIBRA_DEV_USER` | | Dev-mode auth bypass username |
@@ -111,6 +111,8 @@ Vibra is configured via environment variables:
 | `ANTHROPIC_API_KEY` | | API key for Claude agent |
 | `GOOGLE_API_KEY` | | API key for Gemini agent |
 | `OPENAI_API_KEY` | | API key for Codex agent |
+
+> **Note**: Nix modules override `VIBRA_CORS_ORIGIN` to `http://127.0.0.1:3000` by default.
 
 For NixOS deployments, use `environmentFile` to keep secrets out of the Nix store:
 
@@ -160,7 +162,12 @@ When portless wraps a process it sets `HOST` and `PORT` environment variables. T
 
 ### Verify
 
-Open `http://127.0.0.1:3000` in your browser. The Vibra UI should load and connect to the backend.
+Open the Vibra UI in your browser:
+
+- **Without portless**: `http://127.0.0.1:3000`
+- **With portless**: `http://vibra.localhost:1355`
+
+The Vibra UI should load and connect to the backend.
 
 Check version:
 

@@ -113,6 +113,7 @@ func resolveListenAddr() string {
 		if host == "" {
 			host = "127.0.0.1"
 		}
+		log.Printf("resolveListenAddr: using HOST=%s PORT=%s from environment", host, port)
 		return host + ":" + port
 	}
 	return "127.0.0.1:13001"
