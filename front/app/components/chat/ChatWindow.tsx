@@ -23,7 +23,14 @@ function extractClaudeSessionId(events: StreamEvent[]): string | undefined {
   return undefined;
 }
 
-export function ChatWindow({ sessionId: _sessionId, workingDirectory, events, status, error, execute }: ChatWindowProps) {
+export function ChatWindow({
+  sessionId: _sessionId,
+  workingDirectory,
+  events,
+  status,
+  error,
+  execute,
+}: ChatWindowProps) {
   const [workDir, setWorkDir] = useState(workingDirectory ?? "");
   // Tracks the Claude-returned session ID for --resume.
   const claudeSessionRef = useRef<string | undefined>(undefined);

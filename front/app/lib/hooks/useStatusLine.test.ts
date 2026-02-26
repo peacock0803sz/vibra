@@ -1,8 +1,7 @@
-import { renderHook } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-
 import type { EnvironmentInfo, StreamEvent } from "@gen/vibra/agent/v1/agent_pb";
 import { AgentType } from "@gen/vibra/agent/v1/agent_pb";
+import { renderHook } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 
 import { useStatusLine } from "./useStatusLine";
 
@@ -141,9 +140,7 @@ describe("useStatusLine", () => {
   });
 
   it("FR-011: 非空値に更新された場合は新しい値を表示する", () => {
-    const initialEvents = [
-      makeEnvEvent({ repository: "old/repo", branch: "old-branch" }),
-    ];
+    const initialEvents = [makeEnvEvent({ repository: "old/repo", branch: "old-branch" })];
     const { result, rerender } = renderHook(
       ({ events }: { events: StreamEvent[] }) => useStatusLine(events),
       { initialProps: { events: initialEvents } },
@@ -152,10 +149,7 @@ describe("useStatusLine", () => {
     expect(result.current.repository).toBe("old/repo");
 
     rerender({
-      events: [
-        ...initialEvents,
-        makeEnvEvent({ repository: "new/repo", branch: "new-branch" }),
-      ],
+      events: [...initialEvents, makeEnvEvent({ repository: "new/repo", branch: "new-branch" })],
     });
 
     expect(result.current.repository).toBe("new/repo");

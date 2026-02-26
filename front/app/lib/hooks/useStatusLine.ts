@@ -48,8 +48,7 @@ export function useStatusLine(events: StreamEvent[]): StatusLineData {
     hostname: env.hostname || prevRef.current.hostname,
     repository: env.repository || prevRef.current.repository,
     branch: env.branch || prevRef.current.branch,
-    agentType:
-      AGENT_LABELS[env.agent] || prevRef.current.agentType,
+    agentType: AGENT_LABELS[env.agent] || prevRef.current.agentType,
     modelName: env.modelName || prevRef.current.modelName,
   };
 
