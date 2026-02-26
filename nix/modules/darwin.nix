@@ -44,7 +44,11 @@ in
       devUser = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
-        description = "Dev auth bypass user";
+        description = ''
+          Dev auth bypass user. WARNING: Setting this option bypasses all
+          authentication and treats every request as coming from the specified
+          user. Never enable this in production deployments.
+        '';
       };
 
       defaultWorkdir = lib.mkOption {
@@ -75,6 +79,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    warnings = lib.optionals (cfg.backend.devUser != null) [
+      ''
+        services.vibra.backend.devUser is set to "${cfg.backend.devUser}".
+        This bypasses all authentication. Do not use in production.
+      ''
+    ];
+
     launchd.agents.vibra-back = lib.mkIf cfg.backend.enable {
       serviceConfig = {
         Label = "com.peacock0803sz.vibra-back";
