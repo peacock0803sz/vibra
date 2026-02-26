@@ -8,7 +8,8 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const serverBundle = resolve(__dirname, "build", "server", "index.js");
-const serveBin = require.resolve("@react-router/serve/bin");
+const servePkgJson = require.resolve("@react-router/serve/package.json");
+const serveBin = resolve(dirname(servePkgJson), "bin.js");
 
 execFileSync(process.execPath, [serveBin, serverBundle], {
   stdio: "inherit",

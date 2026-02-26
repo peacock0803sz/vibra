@@ -5,6 +5,7 @@
   pnpm,
   pnpmConfigHook,
   fetchPnpmDeps,
+  makeWrapper,
 }:
 stdenv.mkDerivation {
   pname = "vibra-front";
@@ -17,7 +18,7 @@ stdenv.mkDerivation {
     ];
   };
 
-  nativeBuildInputs = [ nodejs_22 pnpm pnpmConfigHook ];
+  nativeBuildInputs = [ nodejs_22 pnpm pnpmConfigHook makeWrapper ];
 
   pnpmDeps = fetchPnpmDeps {
     pname = "vibra-front-deps";
@@ -44,17 +45,22 @@ stdenv.mkDerivation {
 
   installPhase = ''
     runHook preInstall
+
+    # Prune devDependencies for production
+    pnpm prune --prod --ignore-scripts
+    find node_modules -xtype l -delete
+    rm -f node_modules/.modules.yaml node_modules/.pnpm-workspace-state-v1.json
+
     mkdir -p "$out/lib/vibra-front"
     cp -r build "$out/lib/vibra-front/"
+    cp -r node_modules "$out/lib/vibra-front/"
     cp start.js "$out/lib/vibra-front/"
     cp package.json "$out/lib/vibra-front/"
 
-    mkdir -p "$out/bin"
-    cat > "$out/bin/vibra-front" <<WRAPPER
-    #!/usr/bin/env bash
-    exec ${nodejs_22}/bin/node "$out/lib/vibra-front/start.js" "\$@"
-    WRAPPER
-    chmod +x "$out/bin/vibra-front"
+    makeWrapper ${nodejs_22}/bin/node "$out/bin/vibra-front" \
+      --add-flags "$out/lib/vibra-front/start.js" \
+      --set NODE_ENV production
+
     runHook postInstall
   '';
 
