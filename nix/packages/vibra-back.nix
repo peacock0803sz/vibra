@@ -1,8 +1,6 @@
 {
   lib,
   buildGoModule,
-  buf,
-  protobuf,
 }:
 buildGoModule {
   pname = "vibra-back";
@@ -12,15 +10,12 @@ buildGoModule {
     root = ../..;
     fileset = lib.fileset.unions [
       ../../back
-      ../../proto
-      ../../buf.gen.yaml
-      ../../buf.yaml
     ];
   };
 
   modRoot = "back";
   subPackages = [ "cmd/vibra" ];
-  vendorHash = null;
+  vendorHash = "sha256-UUb3lqjkbAtjhMptdWKYxo81PgYyJEZpc7OLgZmPKh0=";
 
   env.CGO_ENABLED = 0;
 
@@ -31,12 +26,6 @@ buildGoModule {
     "-X main.commit=nix"
     "-X main.date=unknown"
   ];
-
-  nativeBuildInputs = [ buf protobuf ];
-
-  preBuild = ''
-    (cd "$NIX_BUILD_TOP/$sourceRoot" && buf generate)
-  '';
 
   meta = {
     description = "Vibra backend server (connect-go)";

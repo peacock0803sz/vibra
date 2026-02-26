@@ -4,8 +4,6 @@
   nodejs_22,
   pnpmConfigHook,
   fetchPnpmDeps,
-  buf,
-  protobuf,
 }:
 stdenv.mkDerivation {
   pname = "vibra-front";
@@ -15,13 +13,10 @@ stdenv.mkDerivation {
     root = ../..;
     fileset = lib.fileset.unions [
       ../../front
-      ../../proto
-      ../../buf.gen.yaml
-      ../../buf.yaml
     ];
   };
 
-  nativeBuildInputs = [ nodejs_22 pnpmConfigHook buf protobuf ];
+  nativeBuildInputs = [ nodejs_22 pnpmConfigHook ];
 
   pnpmDeps = fetchPnpmDeps {
     pname = "vibra-front-deps";
@@ -40,10 +35,6 @@ stdenv.mkDerivation {
   };
 
   sourceRoot = "source/front";
-
-  preBuild = ''
-    (cd "$NIX_BUILD_TOP/source" && buf generate)
-  '';
 
   buildPhase = ''
     runHook preBuild
