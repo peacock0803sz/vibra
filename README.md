@@ -71,37 +71,4 @@ images/                # Agent container Dockerfiles (claude, codex, gemini)
 
 ## Development
 
-### Prerequisites
-
-- [Nix](https://nixos.org/) with flakes enabled (or manually install Go 1.25+, Node.js 22, Buf CLI, Docker)
-- [Tailscale](https://tailscale.com/) connected on your network
-
-### Setup
-
-```bash
-# Enter dev shell (installs Go, Node, Buf, Docker client)
-direnv allow
-# or: nix develop
-
-# Generate code from proto definitions
-buf lint proto/ && buf generate
-
-# Start backend
-cd back && go run ./cmd/vibra/
-
-# Start frontend (in another terminal)
-cd front && pnpm install && pnpm dev
-```
-
-### Testing
-
-```bash
-# Proto
-buf lint proto/
-
-# Backend
-cd back && go vet ./... && go test -race ./...
-
-# Frontend
-cd front && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup, code style, and testing instructions.
