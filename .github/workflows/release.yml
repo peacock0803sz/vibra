@@ -188,15 +188,17 @@ jobs:
     steps:
       - name: Report release status
         run: |
-          echo "## Release Summary" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Job | Status |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|-----|--------|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| GoReleaser | ${{ needs.goreleaser.result }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| npm Publish | ${{ needs.npm-publish.result }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Container (claude) | ${{ needs.container-claude.result }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Container (codex) | ${{ needs.container-codex.result }} |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Container (gemini) | ${{ needs.container-gemini.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## Release Summary"
+            echo ""
+            echo "| Job | Status |"
+            echo "|-----|--------|"
+            echo "| GoReleaser | ${{ needs.goreleaser.result }} |"
+            echo "| npm Publish | ${{ needs.npm-publish.result }} |"
+            echo "| Container (claude) | ${{ needs.container-claude.result }} |"
+            echo "| Container (codex) | ${{ needs.container-codex.result }} |"
+            echo "| Container (gemini) | ${{ needs.container-gemini.result }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail on critical job failure
         if: needs.goreleaser.result == 'failure' || needs.npm-publish.result == 'failure'
