@@ -1,11 +1,6 @@
 {
   "name": "@peacock0803sz/vibra",
   "version": "0.0.0",
-  "type": "module",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "public"
-  },
   "bin": {
     "vibra": "./start.js"
   },
@@ -13,6 +8,11 @@
     "build/",
     "start.js"
   ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
