@@ -150,6 +150,55 @@ export declare type ExecuteRequest = Message<"vibra.agent.v1.ExecuteRequest"> & 
 export declare const ExecuteRequestSchema: GenMessage<ExecuteRequest>;
 
 /**
+ * EnvironmentInfo describes the execution environment of the agent.
+ * Emitted as the first StreamEvent (sequence=1) of each Execute RPC call.
+ *
+ * @generated from message vibra.agent.v1.EnvironmentInfo
+ */
+export declare type EnvironmentInfo = Message<"vibra.agent.v1.EnvironmentInfo"> & {
+  /**
+   * os.Hostname() result; empty on failure
+   *
+   * @generated from field: string hostname = 1;
+   */
+  hostname: string;
+
+  /**
+   * "owner/repo" form; empty if not a git repo or no remote
+   *
+   * @generated from field: string repository = 2;
+   */
+  repository: string;
+
+  /**
+   * branch name; short commit hash if detached HEAD; empty if not a git repo
+   *
+   * @generated from field: string branch = 3;
+   */
+  branch: string;
+
+  /**
+   * same value as ExecuteRequest.agent
+   *
+   * @generated from field: vibra.agent.v1.AgentType agent = 4;
+   */
+  agent: AgentType;
+
+  /**
+   * model name returned by the adapter
+   *
+   * @generated from field: string model_name = 5;
+   */
+  modelName: string;
+};
+
+/**
+ * Describes the message vibra.agent.v1.EnvironmentInfo.
+ * Use `create(EnvironmentInfoSchema)` to create a new message.
+ */
+export declare const EnvironmentInfoSchema: GenMessage<EnvironmentInfo>;
+
+/**
  * StreamEvent contains the shared payload structure for streaming RPCs.
  *
  * @generated from message vibra.agent.v1.StreamEvent
@@ -203,6 +252,12 @@ export declare type StreamEvent = Message<"vibra.agent.v1.StreamEvent"> & {
      */
     value: SessionInfo;
     case: "session";
+  } | {
+    /**
+     * @generated from field: vibra.agent.v1.EnvironmentInfo environment = 9;
+     */
+    value: EnvironmentInfo;
+    case: "environment";
   } | { case: undefined; value?: undefined };
 };
 
