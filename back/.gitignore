@@ -37,3 +37,6 @@ go.work.sum
 # Buf generated code
 gen/
 /vibra
+
+# GoReleaser
+dist/

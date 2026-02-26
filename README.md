@@ -12,6 +12,38 @@ Operate multiple AI agents (Claude Code, Codex CLI, Gemini CLI) from any device 
 - **Session Persistence** - Resume conversations across devices
 - **Mobile Responsive** - Touch-optimized UI for on-the-go usage
 
+## Getting Started
+
+### Install
+
+**Binary** (Linux / macOS):
+
+```bash
+# Download from GitHub Releases (replace OS and ARCH)
+curl -Lo vibra.tar.gz https://github.com/peacock0803sz/vibra/releases/latest/download/vibra_linux_amd64.tar.gz
+tar xzf vibra.tar.gz && sudo mv vibra /usr/local/bin/
+```
+
+**NixOS / nix-darwin** (recommended):
+
+```nix
+{
+  inputs.vibra.url = "github:peacock0803sz/vibra";
+  # NixOS: vibra.nixosModules.vibra
+  # Darwin: vibra.darwinModules.vibra
+}
+```
+
+### Run
+
+```bash
+export VIBRA_ALLOWED_DIRS="$HOME/projects"
+export ANTHROPIC_API_KEY="sk-ant-..."
+vibra
+```
+
+See [docs/setup.md](docs/setup.md) for full installation, configuration, and service management instructions.
+
 ## Architecture
 
 ```text
