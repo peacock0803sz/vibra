@@ -21,6 +21,7 @@ cd front && pnpm lint && pnpm format:check && pnpm typecheck
 - TypeScript: oxlint + oxfmt (Rust-based, zero-config plugins)
 - Proto: `buf lint` enforced
 - All documentation must be in English
+- Commit messages: use emoji prefixes defined in [.gitmessage](.gitmessage)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

@@ -41,6 +41,7 @@ cd front && pnpm install && pnpm dev
 - TypeScript uses oxlint for linting and oxfmt for formatting. No extra config needed.
 - Proto files must pass `buf lint`.
 - Write documentation and comments in English.
+- Use emoji prefixes in commit messages. See [.gitmessage](.gitmessage) for the full list.
 
 ## Checks
 
