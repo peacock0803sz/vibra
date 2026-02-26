@@ -8,10 +8,10 @@ import { callConnectStreaming } from "../helpers/stream-client.ts";
 export default scenario("Chat Interaction", { tags: ["chat", "smoke"] })
   .resource("frontend", frontendClient)
   .step("create session via POST /", async (ctx) => {
-    const response = await ctx.resources.frontend.post("/", {
+    const response = await ctx.resources.frontend.post("/?index", {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: "",
-      followRedirects: false,
+      redirect: "manual",
     });
     expect(response).toHaveStatus(302);
     const location = response.headers.get("location") ?? "";

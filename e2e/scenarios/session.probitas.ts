@@ -13,10 +13,10 @@ export default scenario("Session Creation", { tags: ["session", "smoke"] })
   })
   .step("POST / creates session and redirects to /chat/:sessionId", async (ctx) => {
     // React Router action handler creates a session UUID and returns a redirect.
-    const response = await ctx.resources.frontend.post("/", {
+    const response = await ctx.resources.frontend.post("/?index", {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: "",
-      followRedirects: false,
+      redirect: "manual",
     });
     expect(response).toHaveStatus(302);
     const location = response.headers.get("location") ?? "";
