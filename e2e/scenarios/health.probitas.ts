@@ -1,4 +1,4 @@
-import { scenario } from "jsr:@probitas/probitas@^0";
+import { expect, scenario } from "jsr:@probitas/probitas@^0";
 import { backendClient } from "../helpers/connect-client.ts";
 
 // US1: Validates that the ConnectRPC back-end is healthy and agents are available.

@@ -148,3 +148,4 @@ vite.config.ts.timestamp-*
 
 # React Router v7
 .react-router/
+build/

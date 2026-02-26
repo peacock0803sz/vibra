@@ -1,4 +1,4 @@
-import { scenario } from "jsr:@probitas/probitas@^0";
+import { expect, scenario } from "jsr:@probitas/probitas@^0";
 import { frontendClient } from "../helpers/connect-client.ts";
 
 // US3: Verifies the React Router session creation flow.

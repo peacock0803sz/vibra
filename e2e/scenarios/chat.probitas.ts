@@ -1,4 +1,4 @@
-import { scenario } from "jsr:@probitas/probitas@^0";
+import { expect, scenario } from "jsr:@probitas/probitas@^0";
 import { frontendClient } from "../helpers/connect-client.ts";
 import { callConnectStreaming } from "../helpers/stream-client.ts";
 

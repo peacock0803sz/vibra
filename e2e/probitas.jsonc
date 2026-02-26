@@ -1,6 +1,8 @@
 {
-  // Scenario discovery: all *.probitas.ts files in this directory
-  "scenarios": "scenarios/",
+  // Default timeout per scenario execution
+  "timeout": "30s",
   // Default timeout per step in milliseconds
-  "timeout": 30000
+  "stepOptions": {
+    "timeout": 30000
+  }
 }
