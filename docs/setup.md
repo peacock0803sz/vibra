@@ -102,7 +102,7 @@ Vibra is configured via environment variables:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `VIBRA_LISTEN_ADDR` | `127.0.0.1:3001` | Backend listen address |
-| `VIBRA_CORS_ORIGIN` | `http://127.0.0.1:5173` | Allowed CORS origin |
+| `VIBRA_CORS_ORIGIN` | `http://127.0.0.1:5173` (dev) / `http://127.0.0.1:3000` (Nix modules) | Allowed CORS origin |
 | `VIBRA_ALLOWED_DIRS` | (required) | Comma-separated sandbox directories |
 | `VIBRA_ALLOWED_ENVS` | | Comma-separated env vars for agent containers |
 | `VIBRA_DEV_USER` | | Dev-mode auth bypass username |
