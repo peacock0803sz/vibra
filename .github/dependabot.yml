@@ -72,7 +72,7 @@ updates:
   - package-ecosystem: docker
     directory: /images/claude
     schedule:
-      interval: weekly
+      interval: daily
     target-branch: main
     labels:
       - dependencies
@@ -89,7 +89,7 @@ updates:
   - package-ecosystem: docker
     directory: /images/codex
     schedule:
-      interval: weekly
+      interval: daily
     target-branch: main
     labels:
       - dependencies
@@ -106,7 +106,7 @@ updates:
   - package-ecosystem: docker
     directory: /images/gemini
     schedule:
-      interval: weekly
+      interval: daily
     target-branch: main
     labels:
       - dependencies
