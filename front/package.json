@@ -1,7 +1,18 @@
 {
-  "name": "front",
-  "private": true,
+  "name": "@peacock0803sz/vibra",
+  "version": "0.0.0",
   "type": "module",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "bin": {
+    "vibra": "./start.js"
+  },
+  "files": [
+    "build/",
+    "start.js"
+  ],
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
