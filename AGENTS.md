@@ -12,7 +12,7 @@ buf lint proto/ && buf generate
 cd back && go vet ./... && go test -race ./...
 
 # Frontend
-cd front && pnpm lint && pnpm format:check && pnpm typecheck
+cd front && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test
 ```
 
 ## Code Style
