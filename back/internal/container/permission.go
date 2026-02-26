@@ -46,6 +46,8 @@ func ApplyPermission(spec *adapter.ContainerSpec, mode agentv1.PermissionMode) {
 
 func setVolumesReadOnly(spec *adapter.ContainerSpec, readOnly bool) {
 	for i := range spec.Volumes {
-		spec.Volumes[i].ReadOnly = readOnly
+		if !spec.Volumes[i].System {
+			spec.Volumes[i].ReadOnly = readOnly
+		}
 	}
 }

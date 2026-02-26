@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -20,7 +21,19 @@ import (
 	"github.com/peacock0803sz/vibra/back/internal/server"
 )
 
+// Version information injected at build time via -ldflags
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
+
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "--version" {
+		fmt.Printf("vibra %s (commit %s, built %s)\n", version, commit, date)
+		os.Exit(0)
+	}
+
 	listenAddr := envOr("VIBRA_LISTEN_ADDR", "127.0.0.1:3001")
 
 	// Initialize container runtime.
@@ -41,10 +54,13 @@ func main() {
 		DevUser: os.Getenv("VIBRA_DEV_USER"),
 	})
 
+	// Default working directory for requests that omit it (useful for local dev).
+	defaultWorkDir := os.Getenv("VIBRA_DEFAULT_WORKDIR")
+
 	// Register ConnectRPC handlers.
 	mux := http.NewServeMux()
 	path, handler := agentv1connect.NewAgentServiceHandler(
-		server.NewAgentServer(runner, sandboxCfg),
+		server.NewAgentServer(runner, sandboxCfg, defaultWorkDir),
 		connect.WithInterceptors(authInterceptor),
 	)
 	mux.Handle(path, handler)

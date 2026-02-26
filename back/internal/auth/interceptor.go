@@ -41,7 +41,7 @@ type InterceptorConfig struct {
 }
 
 // authenticate extracts and validates the user identity from request headers.
-// Priority: 1. Tailscale header  2. Bearer token
+// Priority: 1. DevUser (if configured)  2. Tailscale header  3. Bearer token
 func authenticate(headers http.Header, cfg *InterceptorConfig) (string, error) {
 	if cfg != nil && cfg.DevUser != "" {
 		return cfg.DevUser, nil

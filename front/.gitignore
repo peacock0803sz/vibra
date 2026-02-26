@@ -143,8 +143,8 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
-# Buf generated code
-gen/
+# Buf generated code (tracked for Nix sandbox compatibility)
+# gen/
 
 # React Router v7
 .react-router/

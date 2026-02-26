@@ -1,0 +1,41 @@
+version: 2
+
+project_name: vibra
+
+builds:
+  - dir: back
+    main: ./cmd/vibra/
+    binary: vibra
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - formats:
+      - tar.gz
+    name_template: "vibra_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    include:
+      - "^✨"
+      - "^🐛"
+      - "^♻️"
+      - "^⚡"
+      - "^🔒"
+      - "^📝"
