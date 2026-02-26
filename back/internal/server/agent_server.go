@@ -122,7 +122,7 @@ func (s *AgentServer) streamLines(
 	stream *connect.ServerStream[agentv1.ExecuteResponse],
 ) error {
 	var seq atomic.Int64
-	seq.Store(1) // sequence=1 は EnvironmentInfo 用に予約済み
+	seq.Store(1) // sequence=1 is reserved for EnvironmentInfo
 	scanner := bufio.NewScanner(logs)
 	// Handle large JSON lines (up to 1MB)
 	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)

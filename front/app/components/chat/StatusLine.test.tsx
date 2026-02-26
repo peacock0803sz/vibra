@@ -22,7 +22,7 @@ const fullData: StatusLineData = {
 };
 
 describe("StatusLine", () => {
-  it("初期状態で全ラベルが表示される", () => {
+  it("displays all labels in initial state", () => {
     const { container } = render(<StatusLine data={initialData} />);
     const view = within(container);
     expect(view.getByText("host")).toBeInTheDocument();
@@ -32,17 +32,17 @@ describe("StatusLine", () => {
     expect(view.getByText("model")).toBeInTheDocument();
   });
 
-  it("初期状態で各ラベルの値が '-' として表示される", () => {
+  it("displays '-' for each label value in initial state", () => {
     const { container } = render(<StatusLine data={initialData} />);
     const view = within(container);
-    // 各ラベル要素の隣の値スパンが '-' であることを確認
+    // Verify that the value span next to each label element is '-'
     for (const label of ["host", "repo", "branch", "agent", "model"]) {
       const labelEl = view.getByText(label);
       expect(labelEl.nextElementSibling?.textContent).toBe("-");
     }
   });
 
-  it("実際の値が正しく表示される", () => {
+  it("displays actual values correctly", () => {
     const { container } = render(<StatusLine data={fullData} />);
     const view = within(container);
     expect(view.getByText("myhost")).toBeInTheDocument();
@@ -52,7 +52,7 @@ describe("StatusLine", () => {
     expect(view.getByText("claude-code")).toBeInTheDocument();
   });
 
-  it("長い値には title 属性が付与される (repo・branch は truncate 対象)", () => {
+  it("adds title attribute to long values (repo and branch are truncated)", () => {
     const longData: StatusLineData = {
       ...fullData,
       repository: "very-long-organization/very-long-repository-name",
@@ -64,7 +64,7 @@ describe("StatusLine", () => {
     expect(view.getByTitle(longData.branch)).toBeInTheDocument();
   });
 
-  it("hostname と model には title 属性が付与されない (truncate 対象外)", () => {
+  it("does not add title attribute to hostname and model (not truncated)", () => {
     const { container } = render(<StatusLine data={fullData} />);
     const view = within(container);
     expect(view.queryByTitle(fullData.hostname)).not.toBeInTheDocument();

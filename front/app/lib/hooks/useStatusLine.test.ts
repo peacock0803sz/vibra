@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { useStatusLine } from "./useStatusLine";
 
-// テスト用の EnvironmentInfo イベントファクトリ
+// Factory for test EnvironmentInfo events
 function makeEnvEvent(partial: Partial<EnvironmentInfo>): StreamEvent {
   return {
     sequence: 1n,
@@ -33,7 +33,7 @@ function makeTextEvent(text: string): StreamEvent {
 }
 
 describe("useStatusLine", () => {
-  it("初期状態 (events が空) で全項目 '-' を返す", () => {
+  it("returns '-' for all fields in initial state (empty events)", () => {
     const { result } = renderHook(() => useStatusLine([]));
     expect(result.current.hostname).toBe("-");
     expect(result.current.repository).toBe("-");
@@ -42,7 +42,7 @@ describe("useStatusLine", () => {
     expect(result.current.modelName).toBe("-");
   });
 
-  it("EnvironmentInfo イベントから全フィールドを取得する", () => {
+  it("extracts all fields from EnvironmentInfo event", () => {
     const events = [
       makeEnvEvent({
         hostname: "myhost",
@@ -60,7 +60,7 @@ describe("useStatusLine", () => {
     expect(result.current.modelName).toBe("claude-code");
   });
 
-  it("空文字フィールドを '-' として表示する", () => {
+  it("displays empty string fields as '-'", () => {
     const events = [
       makeEnvEvent({
         hostname: "myhost",
@@ -77,7 +77,7 @@ describe("useStatusLine", () => {
     expect(result.current.modelName).toBe("claude-code");
   });
 
-  it("複数のイベントがある場合、最後の EnvironmentInfo を使う", () => {
+  it("uses the last EnvironmentInfo when multiple events exist", () => {
     const events = [
       makeEnvEvent({ hostname: "host1", repository: "r1", branch: "b1", modelName: "m1" }),
       makeTextEvent("hello"),
@@ -90,14 +90,14 @@ describe("useStatusLine", () => {
     expect(result.current.modelName).toBe("m2");
   });
 
-  it("EnvironmentInfo 以外のイベントのみの場合、'-' を返す", () => {
+  it("returns '-' when only non-EnvironmentInfo events exist", () => {
     const events = [makeTextEvent("hello"), makeTextEvent("world")];
     const { result } = renderHook(() => useStatusLine(events));
     expect(result.current.hostname).toBe("-");
     expect(result.current.repository).toBe("-");
   });
 
-  it("エージェント種類を正しくラベル変換する (Codex, Gemini)", () => {
+  it("correctly converts agent types to labels (Codex, Gemini)", () => {
     const { result: codex } = renderHook(() =>
       useStatusLine([makeEnvEvent({ agent: AgentType.CODEX })]),
     );
@@ -109,7 +109,7 @@ describe("useStatusLine", () => {
     expect(gemini.current.agentType).toBe("Gemini");
   });
 
-  it("FR-011: 新しいイベントでフィールドが空文字の場合、直前の値を維持する", () => {
+  it("FR-011: preserves previous value when new event field is empty", () => {
     const initialEvents = [
       makeEnvEvent({
         hostname: "myhost",
@@ -126,7 +126,7 @@ describe("useStatusLine", () => {
     expect(result.current.repository).toBe("owner/repo");
     expect(result.current.branch).toBe("main");
 
-    // Git 管理外になった場合: repository/branch が空
+    // Outside git management: repository/branch become empty
     rerender({
       events: [
         ...initialEvents,
@@ -134,12 +134,12 @@ describe("useStatusLine", () => {
       ],
     });
 
-    // 直前の非空値が維持される (FR-011)
+    // Previous non-empty values are preserved (FR-011)
     expect(result.current.repository).toBe("owner/repo");
     expect(result.current.branch).toBe("main");
   });
 
-  it("FR-011: 非空値に更新された場合は新しい値を表示する", () => {
+  it("FR-011: displays new value when updated to non-empty", () => {
     const initialEvents = [makeEnvEvent({ repository: "old/repo", branch: "old-branch" })];
     const { result, rerender } = renderHook(
       ({ events }: { events: StreamEvent[] }) => useStatusLine(events),

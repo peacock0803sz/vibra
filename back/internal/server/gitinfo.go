@@ -50,7 +50,7 @@ func ParseRemoteURL(rawURL string) string {
 	if rawURL == "" {
 		return ""
 	}
-	// SSH形式: git@github.com:owner/repo.git
+	// SSH format: git@github.com:owner/repo.git
 	if strings.HasPrefix(rawURL, "git@") {
 		parts := strings.SplitN(rawURL, ":", 2)
 		if len(parts) != 2 {
@@ -58,13 +58,13 @@ func ParseRemoteURL(rawURL string) string {
 		}
 		return strings.TrimSuffix(parts[1], ".git")
 	}
-	// HTTPS形式: https://github.com/owner/repo.git
+	// HTTPS format: https://github.com/owner/repo.git
 	if strings.Contains(rawURL, "://") {
 		parts := strings.SplitN(rawURL, "://", 2)
 		if len(parts) != 2 {
 			return ""
 		}
-		// ホスト部分を除去: "github.com/owner/repo.git" -> "owner/repo"
+		// Remove host part: "github.com/owner/repo.git" -> "owner/repo"
 		_, path, ok := strings.Cut(parts[1], "/")
 		if !ok {
 			return ""

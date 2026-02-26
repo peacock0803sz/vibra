@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { configure } from "@testing-library/react";
 
-// React 19 の StrictMode は開発時にコンポーネントを複数回マウントするため
-// テストのクエリが重複要素を見つけてしまう。テスト環境では無効化する。
+// React 19's StrictMode mounts components multiple times during development,
+// causing test queries to find duplicate elements. Disable it in the test environment.
 configure({ reactStrictMode: false });
