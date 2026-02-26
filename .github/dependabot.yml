@@ -1,0 +1,120 @@
+version: 2
+updates:
+  # Go modules
+  - package-ecosystem: gomod
+    directory: /back
+    schedule:
+      interval: weekly
+    target-branch: main
+    labels:
+      - dependencies
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # npm (frontend)
+  - package-ecosystem: npm
+    directory: /front
+    schedule:
+      interval: weekly
+    target-branch: main
+    labels:
+      - dependencies
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: main
+    labels:
+      - dependencies
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # Docker - frontend
+  - package-ecosystem: docker
+    directory: /front
+    schedule:
+      interval: weekly
+    target-branch: main
+    labels:
+      - dependencies
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # Docker - agent (Claude)
+  - package-ecosystem: docker
+    directory: /images/claude
+    schedule:
+      interval: weekly
+    target-branch: main
+    labels:
+      - dependencies
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # Docker - agent (Codex)
+  - package-ecosystem: docker
+    directory: /images/codex
+    schedule:
+      interval: weekly
+    target-branch: main
+    labels:
+      - dependencies
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # Docker - agent (Gemini)
+  - package-ecosystem: docker
+    directory: /images/gemini
+    schedule:
+      interval: weekly
+    target-branch: main
+    labels:
+      - dependencies
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
