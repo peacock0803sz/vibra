@@ -107,13 +107,13 @@ in
         Restart = "on-failure";
         RestartSec = 5;
 
-        # セキュリティ強化
+        # Security hardening
         NoNewPrivileges = true;
         PrivateTmp = true;
         ProtectSystem = "strict";
         ProtectHome = true;
         ReadOnlyPaths = [ "/" ];
-        ReadWritePaths = cfg.allowedDirs;
+        ReadWritePaths = cfg.allowedDirs ++ [ "/var/run/docker.sock" ];
       } // lib.optionalAttrs (cfg.environmentFile != null) {
         EnvironmentFile = cfg.environmentFile;
       };

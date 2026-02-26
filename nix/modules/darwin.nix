@@ -77,6 +77,9 @@ in
         };
         StandardOutPath = "/tmp/vibra-back.log";
         StandardErrorPath = "/tmp/vibra-back.err";
+        # NOTE: launchd has no EnvironmentFile equivalent.
+        # API keys must be set in EnvironmentVariables directly
+        # or loaded via a wrapper script.
       };
     };
 
