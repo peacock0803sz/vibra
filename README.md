@@ -10,7 +10,7 @@ Operate multiple AI agents (Claude Code, Codex CLI, Gemini CLI) from any device 
 - **Container Isolation** - Each agent runs in a Docker container with configurable permission profiles (OBSERVE / VERIFY / EDIT / FULL)
 - **Tailscale Auth** - Zero-config authentication via Tailscale identity headers
 - **Session Persistence** - Resume conversations across devices
-- **Mobile Responsive** - Touch-optimized UI for on-the-go usage
+- **Mobile Responsive** - Touch-optimized UI for on-the-go use
 
 ## Getting Started
 
@@ -42,7 +42,7 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 vibra
 ```
 
-See [docs/setup.md](docs/setup.md) for full installation, configuration, and service management instructions.
+See [docs/setup.md](docs/setup.md) for installation, configuration, and service management.
 
 ## Architecture
 
@@ -51,10 +51,10 @@ proto/vibra/           # Protobuf definitions (single source of truth)
 back/                  # Go + connect-go server
   cmd/vibra/           # Main binary
   internal/            # adapter/, server/, auth/, container/, sandbox/
-  gen/                 # buf generated Go code
+  gen/                 # buf-generated Go code
 front/                 # React Router v7 + connect-es client
   app/                 # routes/, components/, lib/
-  gen/                 # buf generated TypeScript code
+  gen/                 # buf-generated TypeScript code
 images/                # Agent container Dockerfiles (claude, codex, gemini)
 ```
 
@@ -71,37 +71,4 @@ images/                # Agent container Dockerfiles (claude, codex, gemini)
 
 ## Development
 
-### Prerequisites
-
-- [Nix](https://nixos.org/) with flakes enabled (or manually install Go 1.25+, Node.js 22, Buf CLI, Docker)
-- [Tailscale](https://tailscale.com/) connected on your network
-
-### Setup
-
-```bash
-# Enter dev shell (installs Go, Node, Buf, Docker client)
-direnv allow
-# or: nix develop
-
-# Generate code from proto definitions
-buf lint proto/ && buf generate
-
-# Start backend
-cd back && go run ./cmd/vibra/
-
-# Start frontend (in another terminal)
-cd front && pnpm install && pnpm dev
-```
-
-### Testing
-
-```bash
-# Proto
-buf lint proto/
-
-# Backend
-cd back && go vet ./... && go test -race ./...
-
-# Frontend
-cd front && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup, code style, and testing instructions.
