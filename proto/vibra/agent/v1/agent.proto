@@ -77,11 +77,11 @@ message ExecuteRequest {
 // EnvironmentInfo describes the execution environment of the agent.
 // Emitted as the first StreamEvent (sequence=1) of each Execute RPC call.
 message EnvironmentInfo {
-  string hostname = 1;    // os.Hostname() result; empty on failure
-  string repository = 2;  // "owner/repo" form; empty if not a git repo or no remote
-  string branch = 3;      // branch name; short commit hash if detached HEAD; empty if not a git repo
-  AgentType agent = 4;    // same value as ExecuteRequest.agent
-  string model_name = 5;  // model name returned by the adapter
+  string hostname = 1; // os.Hostname() result; empty on failure
+  string repository = 2; // "owner/repo" form; empty if not a git repo or no remote
+  string branch = 3; // branch name; short commit hash if detached HEAD; empty if not a git repo
+  AgentType agent = 4; // same value as ExecuteRequest.agent
+  string model_name = 5; // model name returned by the adapter
 }
 
 // StreamEvent contains the shared payload structure for streaming RPCs.
