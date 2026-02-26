@@ -20,7 +20,7 @@ in
 
       listenAddr = lib.mkOption {
         type = lib.types.str;
-        default = "127.0.0.1:3001";
+        default = "127.0.0.1:13001";
         description = "Backend listen address";
       };
 

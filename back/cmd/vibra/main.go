@@ -34,7 +34,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	listenAddr := envOr("VIBRA_LISTEN_ADDR", "127.0.0.1:3001")
+	listenAddr := resolveListenAddr()
 
 	// Initialize container runtime.
 	dockerRT, err := container.NewDockerRuntime()
@@ -99,6 +99,23 @@ func main() {
 	if err := srv.Shutdown(shutdownCtx); err != nil {
 		log.Fatalf("shutdown error: %v", err)
 	}
+}
+
+func resolveListenAddr() string {
+	// Highest priority: explicit VIBRA_LISTEN_ADDR
+	if v := os.Getenv("VIBRA_LISTEN_ADDR"); v != "" {
+		return v
+	}
+	// portless sets HOST and PORT on wrapped processes
+	host := os.Getenv("HOST")
+	port := os.Getenv("PORT")
+	if port != "" {
+		if host == "" {
+			host = "127.0.0.1"
+		}
+		return host + ":" + port
+	}
+	return "127.0.0.1:13001"
 }
 
 func envOr(key, fallback string) string {

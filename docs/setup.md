@@ -101,12 +101,13 @@ Vibra is configured via environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `VIBRA_LISTEN_ADDR` | `127.0.0.1:3001` | Backend listen address |
+| `VIBRA_LISTEN_ADDR` | `127.0.0.1:13001` | Backend listen address |
 | `VIBRA_CORS_ORIGIN` | `http://127.0.0.1:5173` (dev) / `http://127.0.0.1:3000` (Nix modules) | Allowed CORS origin |
 | `VIBRA_ALLOWED_DIRS` | (required) | Comma-separated sandbox directories |
 | `VIBRA_ALLOWED_ENVS` | | Comma-separated env vars for agent containers |
 | `VIBRA_DEV_USER` | | Dev-mode auth bypass username |
 | `VIBRA_DEFAULT_WORKDIR` | | Default working directory |
+| `VITE_API_URL` | `http://127.0.0.1:13001` | Frontend build-time API base URL override |
 | `ANTHROPIC_API_KEY` | | API key for Claude agent |
 | `GOOGLE_API_KEY` | | API key for Gemini agent |
 | `OPENAI_API_KEY` | | API key for Codex agent |
@@ -122,10 +123,10 @@ OPENAI_API_KEY=sk-...
 
 ## First Run
 
-### Manual Start
+### Manual Start (without portless)
 
 ```bash
-# Terminal 1: Backend
+# Terminal 1: Backend (listens on 127.0.0.1:13001 by default)
 export VIBRA_ALLOWED_DIRS="/home/you/projects"
 export ANTHROPIC_API_KEY="sk-ant-..."
 vibra
@@ -134,6 +135,28 @@ vibra
 npx @peacock0803sz/vibra
 # or: vibra-front (if installed via Nix)
 ```
+
+### Manual Start (with portless)
+
+[portless](https://github.com/vercel-labs/portless) maps named `.localhost` URLs to your local services on port 1355, eliminating numeric port conflicts.
+
+```bash
+# Terminal 1: Backend via portless (vibra-api.localhost:1355)
+export VIBRA_ALLOWED_DIRS="/home/you/projects"
+export ANTHROPIC_API_KEY="sk-ant-..."
+portless vibra-api go run ./cmd/vibra
+
+# Terminal 2: Frontend via portless (vibra.localhost:1355)
+export VITE_API_URL="http://vibra-api.localhost:1355"
+export VIBRA_CORS_ORIGIN="http://vibra.localhost:1355"
+portless vibra pnpm dev
+```
+
+When portless wraps a process it sets `HOST` and `PORT` environment variables. The backend resolves its listen address in this order:
+
+1. `VIBRA_LISTEN_ADDR` (explicit override, highest priority)
+2. `HOST:PORT` (set by portless)
+3. `127.0.0.1:13001` (default fallback)
 
 ### Verify
 
