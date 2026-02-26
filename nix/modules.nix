@@ -13,8 +13,8 @@
       {
         imports = [ ./modules/nixos.nix ];
         config.services.vibra = {
-          backPackage = lib.mkDefault packages.vibra-back;
-          frontPackage = lib.mkDefault packages.vibra-front;
+          backend.package = lib.mkDefault packages.vibra-back;
+          frontend.package = lib.mkDefault packages.vibra-front;
         };
       };
 
@@ -29,8 +29,8 @@
       {
         imports = [ ./modules/darwin.nix ];
         config.services.vibra = {
-          backPackage = lib.mkDefault packages.vibra-back;
-          frontPackage = lib.mkDefault packages.vibra-front;
+          backend.package = lib.mkDefault packages.vibra-back;
+          frontend.package = lib.mkDefault packages.vibra-front;
         };
       };
   };

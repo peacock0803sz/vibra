@@ -2,10 +2,9 @@
   lib,
   stdenv,
   nodejs_22,
+  pnpm,
   pnpmConfigHook,
   fetchPnpmDeps,
-  buf,
-  protobuf,
 }:
 stdenv.mkDerivation {
   pname = "vibra-front";
@@ -15,13 +14,10 @@ stdenv.mkDerivation {
     root = ../..;
     fileset = lib.fileset.unions [
       ../../front
-      ../../proto
-      ../../buf.gen.yaml
-      ../../buf.yaml
     ];
   };
 
-  nativeBuildInputs = [ nodejs_22 pnpmConfigHook buf protobuf ];
+  nativeBuildInputs = [ nodejs_22 pnpm pnpmConfigHook ];
 
   pnpmDeps = fetchPnpmDeps {
     pname = "vibra-front-deps";
@@ -34,16 +30,11 @@ stdenv.mkDerivation {
       ];
     };
     sourceRoot = "source/front";
-    # TODO: Replace with actual hash from first `nix build .#vibra-front` attempt
-    hash = lib.fakeHash;
+    hash = "sha256-Ghe/a12HQmWn9kYpaWlBtw4/P+2rmY4nlFKL7sVSmI4=";
     fetcherVersion = 3;
   };
 
   sourceRoot = "source/front";
-
-  preBuild = ''
-    (cd "$NIX_BUILD_TOP/source" && buf generate)
-  '';
 
   buildPhase = ''
     runHook preBuild

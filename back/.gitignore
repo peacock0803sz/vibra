@@ -34,8 +34,8 @@ go.work.sum
 # .idea/
 # .vscode/
 
-# Buf generated code
-gen/
+# Buf generated code (tracked for Nix sandbox compatibility)
+# gen/
 /vibra
 
 # GoReleaser
