@@ -98,10 +98,7 @@ in
 
   config = lib.mkIf cfg.enable {
     warnings = lib.optionals (cfg.backend.devUser != null) [
-      ''
-        services.vibra.backend.devUser is set to "${cfg.backend.devUser}".
-        This bypasses all authentication. Do not use in production.
-      ''
+      "services.vibra.backend.devUser is set to \"${cfg.backend.devUser}\". This bypasses all authentication. Do not use in production."
     ];
 
     users.users.${cfg.user} = {
