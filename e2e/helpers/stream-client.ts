@@ -61,6 +61,14 @@ export async function callConnectStreaming(
     );
   }
 
+  if (!response.ok) {
+    clearTimeout(timeoutId);
+    const errorBody = await response.text();
+    throw new Error(
+      `ConnectRPC streaming request failed with status ${response.status}: ${errorBody}`,
+    );
+  }
+
   const events: StreamEvent[] = [];
   let endStreamMetadata: Record<string, unknown> = {};
 
