@@ -114,4 +114,4 @@ Set automatically by `run-e2e.sh`. For manual runs, set these before starting yo
 |------|------|-----------------|
 | `scenarios/health.probitas.ts` | `health`, `smoke` | No |
 | `scenarios/session.probitas.ts` | `session`, `smoke` | No |
-| `scenarios/chat.probitas.ts` | `chat`, `smoke` | Yes |
+| `scenarios/chat.probitas.ts` | `chat`, `smoke`, `docker` | Yes |

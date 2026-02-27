@@ -26,6 +26,8 @@ jobs:
         with:
           package_json_file: front/package.json
       - uses: probitas-test/setup-probitas@5853e99a6c983117c85f5a702f3ae8cf4c5192ad # v1.3.0
+        with:
+          probitas-version: "0.21.0"
       - run: pnpm install --frozen-lockfile
         working-directory: front
       - run: ./e2e/run-e2e.sh

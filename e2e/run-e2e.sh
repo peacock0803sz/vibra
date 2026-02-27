@@ -89,9 +89,11 @@ if ! wait_for_server "front-end" "http://127.0.0.1:3000" "$FRONT_PID"; then
 fi
 
 # Run Probitas E2E scenarios and capture exit code.
-echo "Running E2E tests..."
+echo "Running E2E tests (excluding docker-tagged scenarios)..."
 cd "$SCRIPT_DIR"
-probitas run
+set +e
+probitas run -s '!tag:docker' --verbose --reload 2>&1
 E2E_EXIT=$?
+set -e
 
 exit $E2E_EXIT

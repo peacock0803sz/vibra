@@ -5,7 +5,7 @@ import { callConnectStreaming } from "../helpers/stream-client.ts";
 // US3: Verifies the core chat interaction flow through the full stack.
 // Requires Docker runtime for agent container execution.
 // Uses stream-client.ts for ConnectRPC server-streaming (T010a decision).
-export default scenario("Chat Interaction", { tags: ["chat", "smoke"] })
+export default scenario("Chat Interaction", { tags: ["chat", "smoke", "docker"] })
   .resource("frontend", frontendClient)
   .step("create session via POST /", async (ctx) => {
     const response = await ctx.resources.frontend.post("/?index", {
