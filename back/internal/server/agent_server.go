@@ -47,7 +47,11 @@ func (s *AgentServer) GetNodeInfo(
 	ctx context.Context,
 	req *connect.Request[agentv1.GetNodeInfoRequest],
 ) (*connect.Response[agentv1.GetNodeInfoResponse], error) {
-	hostname, _ := os.Hostname()
+	hostname, err := os.Hostname()
+	if err != nil {
+		log.Printf("WARNING: os.Hostname() failed: %v", err)
+		hostname = "unknown"
+	}
 
 	agents := s.availableAgents()
 
