@@ -166,6 +166,59 @@ func TestExecute_DisallowedDirectory(t *testing.T) {
 	}
 }
 
+func TestGetNodeInfo(t *testing.T) {
+	runner := container.NewRunner(&fakeRuntime{})
+	cfg := &sandbox.Config{AllowedDirs: []string{"/tmp"}}
+	srv := NewAgentServer(runner, cfg, "")
+
+	_, handler := agentv1connect.NewAgentServiceHandler(srv)
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
+
+	client := agentv1connect.NewAgentServiceClient(http.DefaultClient, ts.URL)
+
+	resp, err := client.GetNodeInfo(context.Background(), connect.NewRequest(&agentv1.GetNodeInfoRequest{}))
+	if err != nil {
+		t.Fatalf("GetNodeInfo: %v", err)
+	}
+
+	if resp.Msg.NodeId == "" {
+		t.Error("NodeId is empty")
+	}
+	if resp.Msg.Status != agentv1.NodeStatus_NODE_STATUS_ONLINE {
+		t.Errorf("Status = %v, want NODE_STATUS_ONLINE", resp.Msg.Status)
+	}
+	if len(resp.Msg.AvailableAgents) == 0 {
+		t.Error("AvailableAgents is empty")
+	}
+}
+
+func TestListAgents(t *testing.T) {
+	runner := container.NewRunner(&fakeRuntime{})
+	cfg := &sandbox.Config{AllowedDirs: []string{"/tmp"}}
+	srv := NewAgentServer(runner, cfg, "")
+
+	_, handler := agentv1connect.NewAgentServiceHandler(srv)
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
+
+	client := agentv1connect.NewAgentServiceClient(http.DefaultClient, ts.URL)
+
+	resp, err := client.ListAgents(context.Background(), connect.NewRequest(&agentv1.ListAgentsRequest{}))
+	if err != nil {
+		t.Fatalf("ListAgents: %v", err)
+	}
+
+	if len(resp.Msg.Agents) == 0 {
+		t.Fatal("Agents is empty")
+	}
+	for _, a := range resp.Msg.Agents {
+		if a.Type == agentv1.AgentType_AGENT_TYPE_UNSPECIFIED {
+			t.Errorf("agent has UNSPECIFIED type")
+		}
+	}
+}
+
 func TestExecute_SkipsUnparseableLines(t *testing.T) {
 	rt := &fakeRuntime{
 		output: `not json
