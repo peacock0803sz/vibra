@@ -23,5 +23,9 @@ export default scenario("Health Check", { tags: ["health", "smoke"] })
     expect(response).toHaveJsonProperty("agents");
     const data = response.json;
     expect(data.agents.length).toBeGreaterThan(0);
+    for (const agent of data.agents) {
+      expect(typeof agent.type).toBe("string");
+      expect(typeof agent.available).toBe("boolean");
+    }
   })
   .build();
