@@ -25,7 +25,10 @@ export default scenario("Session Creation", { tags: ["session", "smoke"] })
     return { sessionId: location.replace("/chat/", "") };
   })
   .step("GET /chat/:sessionId returns 200", async (ctx) => {
-    const { sessionId } = ctx.previous as { sessionId: string };
+    const sessionId = (ctx.previous as any)?.sessionId;
+    if (typeof sessionId !== "string") {
+      throw new Error("`sessionId` was not returned or has an invalid type from the previous step.");
+    }
     const response = await ctx.resources.frontend.get(`/chat/${sessionId}`);
     expect(response).toHaveStatus(200);
   })

@@ -19,14 +19,19 @@ export default scenario("Chat Interaction", { tags: ["chat", "smoke", "docker"] 
     return { sessionId: location.replace("/chat/", "") };
   })
   .step("GET /chat/:sessionId returns 200", async (ctx) => {
-    const { sessionId } = ctx.previous as { sessionId: string };
+    const sessionId = (ctx.previous as any)?.sessionId;
+    if (typeof sessionId !== "string") {
+      throw new Error("`sessionId` was not returned or has an invalid type from the previous step.");
+    }
     const response = await ctx.resources.frontend.get(`/chat/${sessionId}`);
     expect(response).toHaveStatus(200);
     return ctx.previous;
   })
   .step("Execute returns text and session events", async (ctx) => {
-    // On back-end timeout, error message identifies 127.0.0.1:3001 as unreachable.
-    const { sessionId } = ctx.previous as { sessionId: string };
+    const sessionId = (ctx.previous as any)?.sessionId;
+    if (typeof sessionId !== "string") {
+      throw new Error("`sessionId` was not returned or has an invalid type from the previous step.");
+    }
     const result = await callConnectStreaming(
       "/vibra.agent.v1.AgentService/Execute",
       {
