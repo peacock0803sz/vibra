@@ -25,7 +25,8 @@ export default scenario("Health Check", { tags: ["health", "smoke"] })
     expect(data.agents.length).toBeGreaterThan(0);
     for (const agent of data.agents) {
       expect(typeof agent.type).toBe("string");
-      expect(typeof agent.available).toBe("boolean");
+      // proto3 JSON omits default values; available defaults to false when absent
+      expect(typeof (agent.available ?? false)).toBe("boolean");
     }
   })
   .build();
