@@ -6,7 +6,7 @@
 // Deno's native fetch (available via Probitas's bundled Deno runtime) to read the
 // raw stream and parse envelopes manually.
 
-const BACKEND_URL = "http://127.0.0.1:3001";
+const BACKEND_URL = `http://${Deno.env.get("VIBRA_LISTEN_ADDR") ?? "127.0.0.1:3001"}`;
 
 // End-stream message flag in the Connect protocol envelope.
 const FLAG_END_STREAM = 0x02;
@@ -57,7 +57,7 @@ export async function callConnectStreaming(
   } catch (err) {
     clearTimeout(timeoutId);
     throw new Error(
-      `ConnectRPC streaming request failed (127.0.0.1:3001 unreachable): ${err}`,
+      `ConnectRPC streaming request failed (${BACKEND_URL} unreachable): ${err}`,
     );
   }
 
@@ -71,6 +71,7 @@ export async function callConnectStreaming(
 
   const events: StreamEvent[] = [];
   let endStreamMetadata: Record<string, unknown> = {};
+  let receivedEndStream = false;
 
   try {
     if (!response.body) {
@@ -105,6 +106,7 @@ export async function callConnectStreaming(
 
         if (flags & FLAG_END_STREAM) {
           endStreamMetadata = parsed;
+          receivedEndStream = true;
         } else {
           // ExecuteResponse wraps the payload as { event: StreamEvent }.
           events.push(parsed.event ?? parsed);
@@ -113,6 +115,10 @@ export async function callConnectStreaming(
     }
   } finally {
     clearTimeout(timeoutId);
+  }
+
+  if (!receivedEndStream) {
+    throw new Error("Stream terminated without end-stream message; possible premature server disconnect");
   }
 
   return { events, endStreamMetadata };
