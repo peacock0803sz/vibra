@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"sort"
 	"sync/atomic"
 
 	"connectrpc.com/connect"
@@ -82,6 +83,9 @@ func (s *AgentServer) availableAgents() []*agentv1.AgentInfo {
 			Available: a.Available(),
 		})
 	}
+	sort.Slice(agents, func(i, j int) bool {
+		return agents[i].Type < agents[j].Type
+	})
 	return agents
 }
 
