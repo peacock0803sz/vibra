@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"sort"
 	"sync/atomic"
 
 	"connectrpc.com/connect"
@@ -40,6 +41,52 @@ func NewAgentServer(runner *container.Runner, sandbox *sandbox.Config, defaultWo
 			agentv1.AgentType_AGENT_TYPE_CLAUDE: adapter.NewClaudeAdapter(),
 		},
 	}
+}
+
+// GetNodeInfo returns information about this vibra node.
+func (s *AgentServer) GetNodeInfo(
+	ctx context.Context,
+	req *connect.Request[agentv1.GetNodeInfoRequest],
+) (*connect.Response[agentv1.GetNodeInfoResponse], error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		log.Printf("WARNING: os.Hostname() failed: %v", err)
+		hostname = "unknown"
+	}
+
+	agents := s.availableAgents()
+
+	return connect.NewResponse(&agentv1.GetNodeInfoResponse{
+		NodeId:            hostname,
+		TailscaleHostname: hostname,
+		AvailableAgents:   agents,
+		Status:            agentv1.NodeStatus_NODE_STATUS_ONLINE,
+	}), nil
+}
+
+// ListAgents returns the agents available on this node.
+func (s *AgentServer) ListAgents(
+	ctx context.Context,
+	req *connect.Request[agentv1.ListAgentsRequest],
+) (*connect.Response[agentv1.ListAgentsResponse], error) {
+	return connect.NewResponse(&agentv1.ListAgentsResponse{
+		Agents: s.availableAgents(),
+	}), nil
+}
+
+// availableAgents builds the AgentInfo list from registered adapters.
+func (s *AgentServer) availableAgents() []*agentv1.AgentInfo {
+	agents := make([]*agentv1.AgentInfo, 0, len(s.adapters))
+	for agentType, a := range s.adapters {
+		agents = append(agents, &agentv1.AgentInfo{
+			Type:      agentType,
+			Available: a.Available(),
+		})
+	}
+	sort.Slice(agents, func(i, j int) bool {
+		return agents[i].Type < agents[j].Type
+	})
+	return agents
 }
 
 // Execute sends a prompt to the AI agent and streams the response.

@@ -1,0 +1,8 @@
+{
+  // Default timeout per scenario execution
+  "timeout": "30s",
+  // Default timeout per step in milliseconds
+  "stepOptions": {
+    "timeout": 30000
+  }
+}

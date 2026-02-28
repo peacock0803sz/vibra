@@ -1,0 +1,37 @@
+name: E2E
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "front/**"
+      - "back/**"
+      - "proto/**"
+      - "e2e/**"
+      - ".github/workflows/ci-e2e.yml"
+
+jobs:
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6.3.0
+        with:
+          go-version: "1.25"
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: "22"
+      - uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
+        with:
+          package_json_file: front/package.json
+      - uses: denoland/setup-deno@e95548e56dfa95d4e1a28d6f422fafe75c4c26fb # v2.0.3
+        with:
+          deno-version: v2.x
+      - name: Install Probitas
+        env:
+          PROBITAS_VERSION: "0.21.0"
+        run: curl -fsSL https://raw.githubusercontent.com/probitas-test/probitas/main/install.sh | sh
+      - run: pnpm install --frozen-lockfile
+        working-directory: front
+      - run: ./e2e/run-e2e.sh
