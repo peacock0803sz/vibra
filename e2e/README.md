@@ -90,7 +90,10 @@ Use `return` from a step to pass data to the next step via `ctx.previous`:
   return { sessionId: "..." };
 })
 .step("use session", async (ctx) => {
-  const { sessionId } = ctx.previous as { sessionId: string };
+  const sessionId = (ctx.previous as any)?.sessionId;
+  if (typeof sessionId !== "string") {
+    throw new Error("`sessionId` was not returned from the previous step.");
+  }
 })
 ```
 
