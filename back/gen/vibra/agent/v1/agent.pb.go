@@ -512,6 +512,84 @@ func (x *ExecuteRequest) GetPermissionMode() PermissionMode {
 	return PermissionMode_PERMISSION_MODE_UNSPECIFIED
 }
 
+// EnvironmentInfo describes the execution environment of the agent.
+// Emitted as the first StreamEvent (sequence=1) of each Execute RPC call.
+type EnvironmentInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Hostname      string                 `protobuf:"bytes,1,opt,name=hostname,proto3" json:"hostname,omitempty"`                          // os.Hostname() result; empty on failure
+	Repository    string                 `protobuf:"bytes,2,opt,name=repository,proto3" json:"repository,omitempty"`                      // "owner/repo" form; empty if not a git repo or no remote
+	Branch        string                 `protobuf:"bytes,3,opt,name=branch,proto3" json:"branch,omitempty"`                              // branch name; short commit hash if detached HEAD; empty if not a git repo
+	Agent         AgentType              `protobuf:"varint,4,opt,name=agent,proto3,enum=vibra.agent.v1.AgentType" json:"agent,omitempty"` // same value as ExecuteRequest.agent
+	ModelName     string                 `protobuf:"bytes,5,opt,name=model_name,json=modelName,proto3" json:"model_name,omitempty"`       // model name returned by the adapter
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EnvironmentInfo) Reset() {
+	*x = EnvironmentInfo{}
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EnvironmentInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EnvironmentInfo) ProtoMessage() {}
+
+func (x *EnvironmentInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EnvironmentInfo.ProtoReflect.Descriptor instead.
+func (*EnvironmentInfo) Descriptor() ([]byte, []int) {
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *EnvironmentInfo) GetHostname() string {
+	if x != nil {
+		return x.Hostname
+	}
+	return ""
+}
+
+func (x *EnvironmentInfo) GetRepository() string {
+	if x != nil {
+		return x.Repository
+	}
+	return ""
+}
+
+func (x *EnvironmentInfo) GetBranch() string {
+	if x != nil {
+		return x.Branch
+	}
+	return ""
+}
+
+func (x *EnvironmentInfo) GetAgent() AgentType {
+	if x != nil {
+		return x.Agent
+	}
+	return AgentType_AGENT_TYPE_UNSPECIFIED
+}
+
+func (x *EnvironmentInfo) GetModelName() string {
+	if x != nil {
+		return x.ModelName
+	}
+	return ""
+}
+
 // StreamEvent contains the shared payload structure for streaming RPCs.
 type StreamEvent struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
@@ -525,6 +603,7 @@ type StreamEvent struct {
 	//	*StreamEvent_ToolResult
 	//	*StreamEvent_Error
 	//	*StreamEvent_Session
+	//	*StreamEvent_Environment
 	Payload       isStreamEvent_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -532,7 +611,7 @@ type StreamEvent struct {
 
 func (x *StreamEvent) Reset() {
 	*x = StreamEvent{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[6]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -544,7 +623,7 @@ func (x *StreamEvent) String() string {
 func (*StreamEvent) ProtoMessage() {}
 
 func (x *StreamEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[6]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -557,7 +636,7 @@ func (x *StreamEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamEvent.ProtoReflect.Descriptor instead.
 func (*StreamEvent) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{6}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *StreamEvent) GetSequence() int64 {
@@ -633,6 +712,15 @@ func (x *StreamEvent) GetSession() *SessionInfo {
 	return nil
 }
 
+func (x *StreamEvent) GetEnvironment() *EnvironmentInfo {
+	if x != nil {
+		if x, ok := x.Payload.(*StreamEvent_Environment); ok {
+			return x.Environment
+		}
+	}
+	return nil
+}
+
 type isStreamEvent_Payload interface {
 	isStreamEvent_Payload()
 }
@@ -657,6 +745,10 @@ type StreamEvent_Session struct {
 	Session *SessionInfo `protobuf:"bytes,8,opt,name=session,proto3,oneof"`
 }
 
+type StreamEvent_Environment struct {
+	Environment *EnvironmentInfo `protobuf:"bytes,9,opt,name=environment,proto3,oneof"`
+}
+
 func (*StreamEvent_Text) isStreamEvent_Payload() {}
 
 func (*StreamEvent_ToolUse) isStreamEvent_Payload() {}
@@ -667,6 +759,8 @@ func (*StreamEvent_Error) isStreamEvent_Payload() {}
 
 func (*StreamEvent_Session) isStreamEvent_Payload() {}
 
+func (*StreamEvent_Environment) isStreamEvent_Payload() {}
+
 type ExecuteResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Event         *StreamEvent           `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
@@ -676,7 +770,7 @@ type ExecuteResponse struct {
 
 func (x *ExecuteResponse) Reset() {
 	*x = ExecuteResponse{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[7]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -688,7 +782,7 @@ func (x *ExecuteResponse) String() string {
 func (*ExecuteResponse) ProtoMessage() {}
 
 func (x *ExecuteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[7]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -701,7 +795,7 @@ func (x *ExecuteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExecuteResponse.ProtoReflect.Descriptor instead.
 func (*ExecuteResponse) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{7}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ExecuteResponse) GetEvent() *StreamEvent {
@@ -720,7 +814,7 @@ type ContinueSessionResponse struct {
 
 func (x *ContinueSessionResponse) Reset() {
 	*x = ContinueSessionResponse{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[8]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -732,7 +826,7 @@ func (x *ContinueSessionResponse) String() string {
 func (*ContinueSessionResponse) ProtoMessage() {}
 
 func (x *ContinueSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[8]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -745,7 +839,7 @@ func (x *ContinueSessionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContinueSessionResponse.ProtoReflect.Descriptor instead.
 func (*ContinueSessionResponse) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{8}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ContinueSessionResponse) GetEvent() *StreamEvent {
@@ -765,7 +859,7 @@ type ToolUse struct {
 
 func (x *ToolUse) Reset() {
 	*x = ToolUse{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[9]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -777,7 +871,7 @@ func (x *ToolUse) String() string {
 func (*ToolUse) ProtoMessage() {}
 
 func (x *ToolUse) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[9]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -790,7 +884,7 @@ func (x *ToolUse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolUse.ProtoReflect.Descriptor instead.
 func (*ToolUse) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{9}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ToolUse) GetToolName() string {
@@ -820,7 +914,7 @@ type ToolResult struct {
 
 func (x *ToolResult) Reset() {
 	*x = ToolResult{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[10]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -832,7 +926,7 @@ func (x *ToolResult) String() string {
 func (*ToolResult) ProtoMessage() {}
 
 func (x *ToolResult) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[10]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -845,7 +939,7 @@ func (x *ToolResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ToolResult.ProtoReflect.Descriptor instead.
 func (*ToolResult) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{10}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ToolResult) GetToolName() string {
@@ -893,7 +987,7 @@ type Error struct {
 
 func (x *Error) Reset() {
 	*x = Error{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[11]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -905,7 +999,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[11]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -918,7 +1012,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{11}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Error) GetCode() int32 {
@@ -949,7 +1043,7 @@ type SessionInfo struct {
 
 func (x *SessionInfo) Reset() {
 	*x = SessionInfo{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[12]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -961,7 +1055,7 @@ func (x *SessionInfo) String() string {
 func (*SessionInfo) ProtoMessage() {}
 
 func (x *SessionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[12]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -974,7 +1068,7 @@ func (x *SessionInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionInfo.ProtoReflect.Descriptor instead.
 func (*SessionInfo) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{12}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SessionInfo) GetSessionId() string {
@@ -1028,7 +1122,7 @@ type ListSessionsRequest struct {
 
 func (x *ListSessionsRequest) Reset() {
 	*x = ListSessionsRequest{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[13]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1040,7 +1134,7 @@ func (x *ListSessionsRequest) String() string {
 func (*ListSessionsRequest) ProtoMessage() {}
 
 func (x *ListSessionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[13]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1053,7 +1147,7 @@ func (x *ListSessionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSessionsRequest.ProtoReflect.Descriptor instead.
 func (*ListSessionsRequest) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{13}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListSessionsRequest) GetAgentFilter() AgentType {
@@ -1072,7 +1166,7 @@ type ListSessionsResponse struct {
 
 func (x *ListSessionsResponse) Reset() {
 	*x = ListSessionsResponse{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[14]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1084,7 +1178,7 @@ func (x *ListSessionsResponse) String() string {
 func (*ListSessionsResponse) ProtoMessage() {}
 
 func (x *ListSessionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[14]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1097,7 +1191,7 @@ func (x *ListSessionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSessionsResponse.ProtoReflect.Descriptor instead.
 func (*ListSessionsResponse) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{14}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListSessionsResponse) GetSessions() []*SessionInfo {
@@ -1119,7 +1213,7 @@ type ContinueSessionRequest struct {
 
 func (x *ContinueSessionRequest) Reset() {
 	*x = ContinueSessionRequest{}
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[15]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1131,7 +1225,7 @@ func (x *ContinueSessionRequest) String() string {
 func (*ContinueSessionRequest) ProtoMessage() {}
 
 func (x *ContinueSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_vibra_agent_v1_agent_proto_msgTypes[15]
+	mi := &file_vibra_agent_v1_agent_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1144,7 +1238,7 @@ func (x *ContinueSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContinueSessionRequest.ProtoReflect.Descriptor instead.
 func (*ContinueSessionRequest) Descriptor() ([]byte, []int) {
-	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{15}
+	return file_vibra_agent_v1_agent_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ContinueSessionRequest) GetSessionId() string {
@@ -1203,7 +1297,16 @@ const file_vibra_agent_v1_agent_proto_rawDesc = "" +
 	"\x0fpermission_mode\x18\x06 \x01(\x0e2\x1e.vibra.agent.v1.PermissionModeR\x0epermissionMode\x1a6\n" +
 	"\bEnvEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x80\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb5\x01\n" +
+	"\x0fEnvironmentInfo\x12\x1a\n" +
+	"\bhostname\x18\x01 \x01(\tR\bhostname\x12\x1e\n" +
+	"\n" +
+	"repository\x18\x02 \x01(\tR\n" +
+	"repository\x12\x16\n" +
+	"\x06branch\x18\x03 \x01(\tR\x06branch\x12/\n" +
+	"\x05agent\x18\x04 \x01(\x0e2\x19.vibra.agent.v1.AgentTypeR\x05agent\x12\x1d\n" +
+	"\n" +
+	"model_name\x18\x05 \x01(\tR\tmodelName\"\xc5\x03\n" +
 	"\vStreamEvent\x12\x1a\n" +
 	"\bsequence\x18\x01 \x01(\x03R\bsequence\x12\x1d\n" +
 	"\n" +
@@ -1214,7 +1317,8 @@ const file_vibra_agent_v1_agent_proto_rawDesc = "" +
 	"\vtool_result\x18\x06 \x01(\v2\x1a.vibra.agent.v1.ToolResultH\x00R\n" +
 	"toolResult\x12-\n" +
 	"\x05error\x18\a \x01(\v2\x15.vibra.agent.v1.ErrorH\x00R\x05error\x127\n" +
-	"\asession\x18\b \x01(\v2\x1b.vibra.agent.v1.SessionInfoH\x00R\asessionB\t\n" +
+	"\asession\x18\b \x01(\v2\x1b.vibra.agent.v1.SessionInfoH\x00R\asession\x12C\n" +
+	"\venvironment\x18\t \x01(\v2\x1f.vibra.agent.v1.EnvironmentInfoH\x00R\venvironmentB\t\n" +
 	"\apayload\"D\n" +
 	"\x0fExecuteResponse\x121\n" +
 	"\x05event\x18\x01 \x01(\v2\x1b.vibra.agent.v1.StreamEventR\x05event\"L\n" +
@@ -1298,7 +1402,7 @@ func file_vibra_agent_v1_agent_proto_rawDescGZIP() []byte {
 }
 
 var file_vibra_agent_v1_agent_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_vibra_agent_v1_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_vibra_agent_v1_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_vibra_agent_v1_agent_proto_goTypes = []any{
 	(AgentType)(0),                  // 0: vibra.agent.v1.AgentType
 	(PermissionMode)(0),             // 1: vibra.agent.v1.PermissionMode
@@ -1309,20 +1413,21 @@ var file_vibra_agent_v1_agent_proto_goTypes = []any{
 	(*ListAgentsRequest)(nil),       // 6: vibra.agent.v1.ListAgentsRequest
 	(*ListAgentsResponse)(nil),      // 7: vibra.agent.v1.ListAgentsResponse
 	(*ExecuteRequest)(nil),          // 8: vibra.agent.v1.ExecuteRequest
-	(*StreamEvent)(nil),             // 9: vibra.agent.v1.StreamEvent
-	(*ExecuteResponse)(nil),         // 10: vibra.agent.v1.ExecuteResponse
-	(*ContinueSessionResponse)(nil), // 11: vibra.agent.v1.ContinueSessionResponse
-	(*ToolUse)(nil),                 // 12: vibra.agent.v1.ToolUse
-	(*ToolResult)(nil),              // 13: vibra.agent.v1.ToolResult
-	(*Error)(nil),                   // 14: vibra.agent.v1.Error
-	(*SessionInfo)(nil),             // 15: vibra.agent.v1.SessionInfo
-	(*ListSessionsRequest)(nil),     // 16: vibra.agent.v1.ListSessionsRequest
-	(*ListSessionsResponse)(nil),    // 17: vibra.agent.v1.ListSessionsResponse
-	(*ContinueSessionRequest)(nil),  // 18: vibra.agent.v1.ContinueSessionRequest
-	nil,                             // 19: vibra.agent.v1.ExecuteRequest.EnvEntry
-	nil,                             // 20: vibra.agent.v1.ContinueSessionRequest.EnvEntry
-	(*timestamppb.Timestamp)(nil),   // 21: google.protobuf.Timestamp
-	(*anypb.Any)(nil),               // 22: google.protobuf.Any
+	(*EnvironmentInfo)(nil),         // 9: vibra.agent.v1.EnvironmentInfo
+	(*StreamEvent)(nil),             // 10: vibra.agent.v1.StreamEvent
+	(*ExecuteResponse)(nil),         // 11: vibra.agent.v1.ExecuteResponse
+	(*ContinueSessionResponse)(nil), // 12: vibra.agent.v1.ContinueSessionResponse
+	(*ToolUse)(nil),                 // 13: vibra.agent.v1.ToolUse
+	(*ToolResult)(nil),              // 14: vibra.agent.v1.ToolResult
+	(*Error)(nil),                   // 15: vibra.agent.v1.Error
+	(*SessionInfo)(nil),             // 16: vibra.agent.v1.SessionInfo
+	(*ListSessionsRequest)(nil),     // 17: vibra.agent.v1.ListSessionsRequest
+	(*ListSessionsResponse)(nil),    // 18: vibra.agent.v1.ListSessionsResponse
+	(*ContinueSessionRequest)(nil),  // 19: vibra.agent.v1.ContinueSessionRequest
+	nil,                             // 20: vibra.agent.v1.ExecuteRequest.EnvEntry
+	nil,                             // 21: vibra.agent.v1.ContinueSessionRequest.EnvEntry
+	(*timestamppb.Timestamp)(nil),   // 22: google.protobuf.Timestamp
+	(*anypb.Any)(nil),               // 23: google.protobuf.Any
 }
 var file_vibra_agent_v1_agent_proto_depIdxs = []int32{
 	5,  // 0: vibra.agent.v1.GetNodeInfoResponse.available_agents:type_name -> vibra.agent.v1.AgentInfo
@@ -1330,36 +1435,38 @@ var file_vibra_agent_v1_agent_proto_depIdxs = []int32{
 	0,  // 2: vibra.agent.v1.AgentInfo.type:type_name -> vibra.agent.v1.AgentType
 	5,  // 3: vibra.agent.v1.ListAgentsResponse.agents:type_name -> vibra.agent.v1.AgentInfo
 	0,  // 4: vibra.agent.v1.ExecuteRequest.agent:type_name -> vibra.agent.v1.AgentType
-	19, // 5: vibra.agent.v1.ExecuteRequest.env:type_name -> vibra.agent.v1.ExecuteRequest.EnvEntry
+	20, // 5: vibra.agent.v1.ExecuteRequest.env:type_name -> vibra.agent.v1.ExecuteRequest.EnvEntry
 	1,  // 6: vibra.agent.v1.ExecuteRequest.permission_mode:type_name -> vibra.agent.v1.PermissionMode
-	21, // 7: vibra.agent.v1.StreamEvent.timestamp:type_name -> google.protobuf.Timestamp
-	12, // 8: vibra.agent.v1.StreamEvent.tool_use:type_name -> vibra.agent.v1.ToolUse
-	13, // 9: vibra.agent.v1.StreamEvent.tool_result:type_name -> vibra.agent.v1.ToolResult
-	14, // 10: vibra.agent.v1.StreamEvent.error:type_name -> vibra.agent.v1.Error
-	15, // 11: vibra.agent.v1.StreamEvent.session:type_name -> vibra.agent.v1.SessionInfo
-	9,  // 12: vibra.agent.v1.ExecuteResponse.event:type_name -> vibra.agent.v1.StreamEvent
-	9,  // 13: vibra.agent.v1.ContinueSessionResponse.event:type_name -> vibra.agent.v1.StreamEvent
-	22, // 14: vibra.agent.v1.ToolUse.parameters:type_name -> google.protobuf.Any
-	0,  // 15: vibra.agent.v1.SessionInfo.agent:type_name -> vibra.agent.v1.AgentType
-	21, // 16: vibra.agent.v1.SessionInfo.created_at:type_name -> google.protobuf.Timestamp
-	0,  // 17: vibra.agent.v1.ListSessionsRequest.agent_filter:type_name -> vibra.agent.v1.AgentType
-	15, // 18: vibra.agent.v1.ListSessionsResponse.sessions:type_name -> vibra.agent.v1.SessionInfo
-	20, // 19: vibra.agent.v1.ContinueSessionRequest.env:type_name -> vibra.agent.v1.ContinueSessionRequest.EnvEntry
-	3,  // 20: vibra.agent.v1.AgentService.GetNodeInfo:input_type -> vibra.agent.v1.GetNodeInfoRequest
-	6,  // 21: vibra.agent.v1.AgentService.ListAgents:input_type -> vibra.agent.v1.ListAgentsRequest
-	8,  // 22: vibra.agent.v1.AgentService.Execute:input_type -> vibra.agent.v1.ExecuteRequest
-	16, // 23: vibra.agent.v1.AgentService.ListSessions:input_type -> vibra.agent.v1.ListSessionsRequest
-	18, // 24: vibra.agent.v1.AgentService.ContinueSession:input_type -> vibra.agent.v1.ContinueSessionRequest
-	4,  // 25: vibra.agent.v1.AgentService.GetNodeInfo:output_type -> vibra.agent.v1.GetNodeInfoResponse
-	7,  // 26: vibra.agent.v1.AgentService.ListAgents:output_type -> vibra.agent.v1.ListAgentsResponse
-	10, // 27: vibra.agent.v1.AgentService.Execute:output_type -> vibra.agent.v1.ExecuteResponse
-	17, // 28: vibra.agent.v1.AgentService.ListSessions:output_type -> vibra.agent.v1.ListSessionsResponse
-	11, // 29: vibra.agent.v1.AgentService.ContinueSession:output_type -> vibra.agent.v1.ContinueSessionResponse
-	25, // [25:30] is the sub-list for method output_type
-	20, // [20:25] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	0,  // 7: vibra.agent.v1.EnvironmentInfo.agent:type_name -> vibra.agent.v1.AgentType
+	22, // 8: vibra.agent.v1.StreamEvent.timestamp:type_name -> google.protobuf.Timestamp
+	13, // 9: vibra.agent.v1.StreamEvent.tool_use:type_name -> vibra.agent.v1.ToolUse
+	14, // 10: vibra.agent.v1.StreamEvent.tool_result:type_name -> vibra.agent.v1.ToolResult
+	15, // 11: vibra.agent.v1.StreamEvent.error:type_name -> vibra.agent.v1.Error
+	16, // 12: vibra.agent.v1.StreamEvent.session:type_name -> vibra.agent.v1.SessionInfo
+	9,  // 13: vibra.agent.v1.StreamEvent.environment:type_name -> vibra.agent.v1.EnvironmentInfo
+	10, // 14: vibra.agent.v1.ExecuteResponse.event:type_name -> vibra.agent.v1.StreamEvent
+	10, // 15: vibra.agent.v1.ContinueSessionResponse.event:type_name -> vibra.agent.v1.StreamEvent
+	23, // 16: vibra.agent.v1.ToolUse.parameters:type_name -> google.protobuf.Any
+	0,  // 17: vibra.agent.v1.SessionInfo.agent:type_name -> vibra.agent.v1.AgentType
+	22, // 18: vibra.agent.v1.SessionInfo.created_at:type_name -> google.protobuf.Timestamp
+	0,  // 19: vibra.agent.v1.ListSessionsRequest.agent_filter:type_name -> vibra.agent.v1.AgentType
+	16, // 20: vibra.agent.v1.ListSessionsResponse.sessions:type_name -> vibra.agent.v1.SessionInfo
+	21, // 21: vibra.agent.v1.ContinueSessionRequest.env:type_name -> vibra.agent.v1.ContinueSessionRequest.EnvEntry
+	3,  // 22: vibra.agent.v1.AgentService.GetNodeInfo:input_type -> vibra.agent.v1.GetNodeInfoRequest
+	6,  // 23: vibra.agent.v1.AgentService.ListAgents:input_type -> vibra.agent.v1.ListAgentsRequest
+	8,  // 24: vibra.agent.v1.AgentService.Execute:input_type -> vibra.agent.v1.ExecuteRequest
+	17, // 25: vibra.agent.v1.AgentService.ListSessions:input_type -> vibra.agent.v1.ListSessionsRequest
+	19, // 26: vibra.agent.v1.AgentService.ContinueSession:input_type -> vibra.agent.v1.ContinueSessionRequest
+	4,  // 27: vibra.agent.v1.AgentService.GetNodeInfo:output_type -> vibra.agent.v1.GetNodeInfoResponse
+	7,  // 28: vibra.agent.v1.AgentService.ListAgents:output_type -> vibra.agent.v1.ListAgentsResponse
+	11, // 29: vibra.agent.v1.AgentService.Execute:output_type -> vibra.agent.v1.ExecuteResponse
+	18, // 30: vibra.agent.v1.AgentService.ListSessions:output_type -> vibra.agent.v1.ListSessionsResponse
+	12, // 31: vibra.agent.v1.AgentService.ContinueSession:output_type -> vibra.agent.v1.ContinueSessionResponse
+	27, // [27:32] is the sub-list for method output_type
+	22, // [22:27] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_vibra_agent_v1_agent_proto_init() }
@@ -1367,12 +1474,13 @@ func file_vibra_agent_v1_agent_proto_init() {
 	if File_vibra_agent_v1_agent_proto != nil {
 		return
 	}
-	file_vibra_agent_v1_agent_proto_msgTypes[6].OneofWrappers = []any{
+	file_vibra_agent_v1_agent_proto_msgTypes[7].OneofWrappers = []any{
 		(*StreamEvent_Text)(nil),
 		(*StreamEvent_ToolUse)(nil),
 		(*StreamEvent_ToolResult)(nil),
 		(*StreamEvent_Error)(nil),
 		(*StreamEvent_Session)(nil),
+		(*StreamEvent_Environment)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1380,7 +1488,7 @@ func file_vibra_agent_v1_agent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_vibra_agent_v1_agent_proto_rawDesc), len(file_vibra_agent_v1_agent_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   18,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

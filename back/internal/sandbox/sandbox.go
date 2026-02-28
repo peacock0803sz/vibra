@@ -35,6 +35,7 @@ func NewConfigFromEnv() *Config {
 		// Default: only pass through API keys.
 		cfg.AllowedEnvs = []string{
 			"ANTHROPIC_API_KEY",
+			"CLAUDE_CODE_OAUTH_TOKEN",
 			"OPENAI_API_KEY",
 			"GEMINI_API_KEY",
 		}

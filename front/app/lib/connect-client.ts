@@ -1,6 +1,6 @@
 import { createConnectTransport } from "@connectrpc/connect-web";
 
-const DEFAULT_BASE_URL = "http://127.0.0.1:3001";
+const DEFAULT_BASE_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:13001";
 
 /**
  * Create a ConnectRPC transport for browser use.

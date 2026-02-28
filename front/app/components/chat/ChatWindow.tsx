@@ -1,14 +1,15 @@
 import type { StreamEvent } from "@gen/vibra/agent/v1/agent_pb";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useAgent } from "~/lib/hooks/useAgent";
+import type { UseAgentResult } from "~/lib/hooks/useAgent";
 
 import { MessageList } from "./MessageList";
 import { PromptInput } from "./PromptInput";
 
 const STORAGE_KEY = "vibra:workingDirectory";
 
-interface ChatWindowProps {
+interface ChatWindowProps extends UseAgentResult {
+  sessionId?: string;
   workingDirectory?: string;
 }
 
@@ -22,9 +23,14 @@ function extractClaudeSessionId(events: StreamEvent[]): string | undefined {
   return undefined;
 }
 
-export function ChatWindow({ workingDirectory }: ChatWindowProps) {
-  const { events, status, error, execute } = useAgent();
-
+export function ChatWindow({
+  sessionId: _sessionId,
+  workingDirectory,
+  events,
+  status,
+  error,
+  execute,
+}: ChatWindowProps) {
   const [workDir, setWorkDir] = useState(workingDirectory ?? "");
   // Tracks the Claude-returned session ID for --resume.
   const claudeSessionRef = useRef<string | undefined>(undefined);
