@@ -1,7 +1,7 @@
 {
   lib,
   stdenv,
-  nodejs_22,
+  nodejs_24,
   pnpm,
   pnpmConfigHook,
   fetchPnpmDeps,
@@ -18,7 +18,7 @@ stdenv.mkDerivation {
     ];
   };
 
-  nativeBuildInputs = [ nodejs_22 pnpm pnpmConfigHook makeWrapper ];
+  nativeBuildInputs = [ nodejs_24 pnpm pnpmConfigHook makeWrapper ];
 
   pnpmDeps = fetchPnpmDeps {
     pname = "vibra-front-deps";
@@ -31,7 +31,7 @@ stdenv.mkDerivation {
       ];
     };
     sourceRoot = "source/front";
-    hash = "sha256-jUEC743+mtAvuOzRirMVUMzvhuXWu+zigND2nrK66vc=";
+    hash = "sha256-gA1hFSivjH4c/UFXzTYkxIZ+ZyRAk9NL8EQTMKBUXNM=";
     fetcherVersion = 3;
   };
 
@@ -57,7 +57,7 @@ stdenv.mkDerivation {
     cp start.js "$out/lib/vibra-front/"
     cp package.json "$out/lib/vibra-front/"
 
-    makeWrapper ${nodejs_22}/bin/node "$out/bin/vibra-front" \
+    makeWrapper ${nodejs_24}/bin/node "$out/bin/vibra-front" \
       --add-flags "$out/lib/vibra-front/start.js" \
       --set NODE_ENV production
 
