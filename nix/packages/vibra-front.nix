@@ -31,7 +31,7 @@ stdenv.mkDerivation {
       ];
     };
     sourceRoot = "source/front";
-    hash = "sha256-gA1hFSivjH4c/UFXzTYkxIZ+ZyRAk9NL8EQTMKBUXNM=";
+    hash = "sha256-M503XgV+834Yas2ofEgMG9kcuDfcQFlYudbwm5RjaKI=";
     fetcherVersion = 3;
   };
 
