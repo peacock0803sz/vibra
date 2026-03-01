@@ -39,6 +39,18 @@ stdenv.mkDerivation {
 
   sourceRoot = "source/front";
 
+  # pnpm engines.runtime downloads a pre-built node binary that cannot
+  # execute inside the Nix sandbox (missing dynamic linker).  Replace it
+  # with a copy of the Nix-provided nodejs so pnpm can chmod it freely.
+  preBuild = ''
+    runtime_node=$(find node_modules/.pnpm -path '*/node@runtime*/node_modules/node/bin/node' 2>/dev/null || true)
+    if [ -n "$runtime_node" ]; then
+      rm -f "$runtime_node"
+      cp ${nodejs_24}/bin/node "$runtime_node"
+      chmod +x "$runtime_node"
+    fi
+  '';
+
   buildPhase = ''
     runHook preBuild
     pnpm build
