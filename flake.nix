@@ -21,8 +21,8 @@
             go
 
             # Node.js
-            nodejs_22
-            corepack_22
+            nodejs_24
+            corepack_24
 
             # Protobuf / Buf
             buf

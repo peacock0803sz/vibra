@@ -1,7 +1,7 @@
 {
   lib,
   stdenv,
-  nodejs_22,
+  nodejs_24,
   pnpm,
   pnpmConfigHook,
   fetchPnpmDeps,
@@ -18,7 +18,7 @@ stdenv.mkDerivation {
     ];
   };
 
-  nativeBuildInputs = [ nodejs_22 pnpm pnpmConfigHook makeWrapper ];
+  nativeBuildInputs = [ nodejs_24 pnpm pnpmConfigHook makeWrapper ];
 
   pnpmDeps = fetchPnpmDeps {
     pname = "vibra-front-deps";
@@ -31,11 +31,25 @@ stdenv.mkDerivation {
       ];
     };
     sourceRoot = "source/front";
-    hash = "sha256-jUEC743+mtAvuOzRirMVUMzvhuXWu+zigND2nrK66vc=";
+    hash = if stdenv.hostPlatform.isLinux
+      then "sha256-NVCXFbYOxxjRp7QXYOqXdfO1Ch3DKOCK3E6MPMrCtw8="
+      else "sha256-M503XgV+834Yas2ofEgMG9kcuDfcQFlYudbwm5RjaKI=";
     fetcherVersion = 3;
   };
 
   sourceRoot = "source/front";
+
+  # pnpm engines.runtime downloads a pre-built node binary that cannot
+  # execute inside the Nix sandbox (missing dynamic linker).  Replace it
+  # with a copy of the Nix-provided nodejs so pnpm can chmod it freely.
+  preBuild = ''
+    runtime_node=$(find node_modules/.pnpm -path '*/node@runtime*/node_modules/node/bin/node' 2>/dev/null || true)
+    if [ -n "$runtime_node" ]; then
+      rm -f "$runtime_node"
+      cp ${nodejs_24}/bin/node "$runtime_node"
+      chmod +x "$runtime_node"
+    fi
+  '';
 
   buildPhase = ''
     runHook preBuild
@@ -57,7 +71,7 @@ stdenv.mkDerivation {
     cp start.js "$out/lib/vibra-front/"
     cp package.json "$out/lib/vibra-front/"
 
-    makeWrapper ${nodejs_22}/bin/node "$out/bin/vibra-front" \
+    makeWrapper ${nodejs_24}/bin/node "$out/bin/vibra-front" \
       --add-flags "$out/lib/vibra-front/start.js" \
       --set NODE_ENV production
 
