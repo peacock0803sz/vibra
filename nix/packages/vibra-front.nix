@@ -32,7 +32,7 @@ stdenv.mkDerivation {
     };
     sourceRoot = "source/front";
     hash = if stdenv.hostPlatform.isLinux
-      then "sha256-NVCXFbYOxxjRp7QXYOqXdfO1Ch3DKOCK3E6MPMrCtw8="
+      then "sha256-lc2Fe4FdvWnWHtENQbBnpN6frcsAFg0R2vYzi+abCFk="
       else "sha256-M503XgV+834Yas2ofEgMG9kcuDfcQFlYudbwm5RjaKI=";
     fetcherVersion = 3;
   };
